@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="100px" height="101px" viewBox="0 0 100 101" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.1.1 (8761) - http://www.bohemiancoding.com/sketch -->
+    <title>digital-download</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="digital-download" sketch:type="MSLayerGroup">
+            <path d="M50,101 C77.6142375,101 100,78.6142375 100,51 C100,23.3857625 77.6142375,1 50,1 C22.3857625,1 0,23.3857625 0,51 C0,78.6142375 22.3857625,101 50,101 Z" id="Oval" fill="#475F78" sketch:type="MSShapeGroup"></path>
+            <g id="arrow" transform="translate(21.000000, 40.000000)" fill="#FFFFFF" sketch:type="MSShapeGroup">
+                <path d="M24.6635206,14.9999999 C27.6635206,12 29.6635206,12 32.6635206,14.9999999 C32.6635204,14.9999999 56.6635209,39.0099997 56.6635214,39.0100002 C58.6335229,41.0000002 57.9999997,45 53.9999997,45 L3.66351972,45 C-0.336480234,45 -0.336480212,41 1.66351978,39.0100002 C1.66351973,39.0099995 24.6635206,15 24.6635206,14.9999999 Z" id="Shape" transform="translate(29.046545, 28.875000) rotate(-180.000000) translate(-29.046545, -28.875000) "></path>
+                <rect id="Rectangle-1" x="17" y="0" width="24" height="17"></rect>
+            </g>
+            <g id="H" transform="translate(38.000000, 35.000000)" fill="#FFFFFF" sketch:type="MSShapeGroup">
+                <rect id="5" x="20" y="0" width="4" height="6"></rect>
+                <rect id="4" x="15" y="0" width="6" height="6"></rect>
+                <rect id="3" x="10" y="0" width="6" height="6"></rect>
+                <rect id="2" x="5" y="0" width="4" height="4"></rect>
+                <rect id="1" x="0" y="0" width="4" height="6"></rect>
+            </g>
+            <g id="G" transform="translate(38.000000, 30.000000)" fill="#FFFFFF" sketch:type="MSShapeGroup">
+                <rect id="5" x="20" y="0" width="4" height="6"></rect>
+                <rect id="4" x="15" y="0" width="6" height="6"></rect>
+                <rect id="3" x="10" y="0" width="6" height="6"></rect>
+                <rect id="2" x="5" y="0" width="4" height="4"></rect>
+                <rect id="1" x="0" y="0" width="4" height="4"></rect>
+            </g>
+            <g id="F" transform="translate(38.000000, 25.000000)" fill="#FFFFFF" sketch:type="MSShapeGroup">
+                <rect id="5" x="20" y="0" width="4" height="4"></rect>
+                <rect id="4" x="15" y="0" width="4" height="6"></rect>
+                <rect id="3" x="10" y="0" width="6" height="6"></rect>
+                <rect id="2" x="5" y="0" width="4" height="4"></rect>
+            </g>
+            <g id="E" transform="translate(38.000000, 20.000000)" fill="#FFFFFF" sketch:type="MSShapeGroup">
+                <rect id="5" x="20" y="0" width="4" height="4"></rect>
+                <rect id="4" x="15" y="0" width="4" height="6"></rect>
+                <rect id="3" x="10" y="0" width="4" height="4"></rect>
+                <rect id="1" x="0" y="0" width="4" height="4"></rect>
+            </g>
+            <g id="D" transform="translate(38.000000, 15.000000)" fill="#FFFFFF" sketch:type="MSShapeGroup">
+                <rect id="5" x="20" y="0" width="4" height="4"></rect>
+                <rect id="4" x="15" y="0" width="4" height="6"></rect>
+                <rect id="2" x="5" y="0" width="4" height="4"></rect>
+            </g>
+            <g id="C" transform="translate(38.000000, 10.000000)" fill="#FFFFFF" sketch:type="MSShapeGroup">
+                <rect id="4" x="15" y="0" width="4" height="4"></rect>
+                <rect id="2" x="5" y="0" width="4" height="4"></rect>
+                <rect id="1" x="0" y="0" width="4" height="4"></rect>
+            </g>
+            <g id="B" transform="translate(38.000000, 5.000000)" fill="#FFFFFF" sketch:type="MSShapeGroup">
+                <rect id="5" x="20" y="0" width="4" height="4"></rect>
+                <rect id="3" x="10" y="0" width="4" height="4"></rect>
+                <rect id="1" x="0" y="0" width="4" height="4"></rect>
+            </g>
+            <g id="A" transform="translate(38.000000, 0.000000)" fill="#FFFFFF" sketch:type="MSShapeGroup">
+                <rect id="5" x="20" y="0" width="4" height="4"></rect>
+                <rect id="2" x="5" y="0" width="4" height="4"></rect>
+            </g>
+        </g>
+    </g>
+</svg>
