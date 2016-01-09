@@ -4,6 +4,8 @@ namespace Craft;
 class DigitalDownloadService extends BaseApplicationComponent
 {
 
+	public $settings;
+
 	public function hash()
 	{
 		return md5(microtime());
@@ -62,10 +64,12 @@ class DigitalDownloadService extends BaseApplicationComponent
 
 	private function _logDownload($linkRecord)
 	{
-		$log = new DigitalDownload_DownloadLogRecord();
-		$log->linkId     = $linkRecord->id;
-		$log->downloaded = new DateTime();
-		$log->save();
+		if ($this->settings['keepDownloadLog']) {
+			$log = new DigitalDownload_DownloadLogRecord();
+			$log->linkId     = $linkRecord->id;
+			$log->downloaded = new DateTime();
+			$log->save();
+		}
 	}
 
 }
