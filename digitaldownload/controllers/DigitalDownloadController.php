@@ -11,12 +11,14 @@ class DigitalDownloadController extends BaseController
 		$accessKey = craft()->request->getQuery('u');
 		$link = craft()->digitalDownload->link($accessKey);
 		$asset = $link->asset();
+		craft()->digitalDownload->trackDownload($accessKey);
+		$this->_outputFile($asset);
+	}
 
-		// craft()->digitalDownload->logDownload($link);
-
+	private function _outputFile($asset)
+	{
 		header("Content-type: application/octet-stream");
 		header("Content-disposition: attachment; filename=".$asset->filename);
-
 		echo file_get_contents($asset->url);
 		exit;
 	}

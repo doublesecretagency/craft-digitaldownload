@@ -17,23 +17,47 @@ class DigitalDownloadService extends BaseApplicationComponent
 		$expires = new DateTime();
 		$expires = $expires->add(new DateInterval($ttl));
 
-		$link = new DigitalDownload_LinkRecord();
+		$linkRecord = new DigitalDownload_LinkRecord();
 
-		$link->assetId   = $file->id;
-		$link->accessKey = $accessKey;
-		$link->expires   = $expires;
+		$linkRecord->assetId   = $file->id;
+		$linkRecord->accessKey = $accessKey;
+		$linkRecord->expires   = $expires;
 
-		$link->save();
+		$linkRecord->save();
 
 		return $accessKey;
 	}
 
 	public function link($accessKey)
 	{
-		$linkRecord = DigitalDownload_LinkRecord::model()->findByAttributes(array(
+		$linkRecord = $this->_linkRecord($accessKey);
+		return DigitalDownload_LinkModel::populateModel($linkRecord);
+	}
+
+	public function trackDownload($accessKey)
+	{
+		$linkRecord = $this->_linkRecord($accessKey);
+		$linkRecord->totalDownloads++;
+		$linkRecord->lastDownloaded = new DateTime();
+		$this->_logDownload($linkRecord);
+		return $linkRecord->save();
+	}
+
+	// ========================================================================= //
+
+	private function _linkRecord($accessKey)
+	{
+		return DigitalDownload_LinkRecord::model()->findByAttributes(array(
 			'accessKey' => $accessKey
 		));
-		return DigitalDownload_LinkModel::populateModel($linkRecord);
+	}
+
+	private function _logDownload($linkRecord)
+	{
+		$log = new DigitalDownload_DownloadLogRecord();
+		$log->linkId     = $linkRecord->id;
+		$log->downloaded = new DateTime();
+		$log->save();
 	}
 
 }
