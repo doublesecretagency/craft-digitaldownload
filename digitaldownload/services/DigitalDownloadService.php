@@ -43,6 +43,14 @@ class DigitalDownloadService extends BaseApplicationComponent
 		return $linkRecord->save();
 	}
 
+	public function pruneLinks()
+	{
+		craft()->db->createCommand()->delete(
+			'digitaldownload_links',
+			'expires <= NOW()'
+		);
+	}
+
 	// ========================================================================= //
 
 	private function _linkRecord($accessKey)

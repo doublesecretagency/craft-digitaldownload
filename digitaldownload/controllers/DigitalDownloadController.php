@@ -4,7 +4,7 @@ namespace Craft;
 class DigitalDownloadController extends BaseController
 {
 
-	protected $allowAnonymous = array('actionDownload');
+	protected $allowAnonymous = array('actionDownload','actionPrune');
 
 	public function actionDownload()
 	{
@@ -22,5 +22,12 @@ class DigitalDownloadController extends BaseController
 		echo file_get_contents($asset->url);
 		exit;
 	}
+
+	/* Should this action even exist?
+	public function actionPrune()
+	{
+		craft()->digitalDownload->pruneLinks();
+	}
+	*/
 
 }
