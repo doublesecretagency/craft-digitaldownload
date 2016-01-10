@@ -4,7 +4,7 @@ namespace Craft;
 class DigitalDownloadController extends BaseController
 {
 
-	protected $allowAnonymous = array('actionDownload','actionPrune');
+	protected $allowAnonymous = array('actionDownload','actionMarkLinksExpired');
 
 	public function actionDownload()
 	{
@@ -23,10 +23,11 @@ class DigitalDownloadController extends BaseController
 		exit;
 	}
 
-	/* Should this action even exist?
-	public function actionPrune()
+	/* Should this action even exist? */
+	/*
+	public function actionMarkLinksExpired()
 	{
-		craft()->digitalDownload->pruneLinks();
+		craft()->digitalDownload->markLinksExpired();
 	}
 	*/
 

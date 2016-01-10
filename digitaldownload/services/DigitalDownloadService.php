@@ -45,6 +45,21 @@ class DigitalDownloadService extends BaseApplicationComponent
 		return $linkRecord->save();
 	}
 
+	public function markLinksExpired()
+	{
+		craft()->db->createCommand()->update(
+			'digitaldownload_links',
+			array('enabled' => 0),
+			'(expires <= NOW()) AND (enabled = 1)'
+		);
+	}
+
+	/*
+	 * Should this method be scrapped?
+	 *
+	 * Delete all expired links from database.
+	 */
+	/*
 	public function pruneLinks()
 	{
 		craft()->db->createCommand()->delete(
@@ -52,6 +67,7 @@ class DigitalDownloadService extends BaseApplicationComponent
 			'expires <= NOW()'
 		);
 	}
+	*/
 
 	// ========================================================================= //
 
