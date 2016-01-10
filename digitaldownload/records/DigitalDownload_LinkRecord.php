@@ -13,9 +13,11 @@ class DigitalDownload_LinkRecord extends BaseRecord
 	{
 		return array(
 			'accessKey'      => array(AttributeType::String),
+			'enabled'        => array(AttributeType::Bool,     'default' => true),
 			'expires'        => array(AttributeType::DateTime, 'default' => null),
-			'totalDownloads' => array(AttributeType::Number,   'default' => 0),
 			'lastDownloaded' => array(AttributeType::DateTime, 'default' => null),
+			'totalDownloads' => array(AttributeType::Number,   'default' => 0),
+			'maxDownloads'   => array(AttributeType::Number,   'default' => 0),
 		);
 	}
 
@@ -23,6 +25,13 @@ class DigitalDownload_LinkRecord extends BaseRecord
 	{
 		return array(
 			'asset' => array(static::BELONGS_TO, 'AssetFileRecord', 'required' => true, 'onDelete' => static::CASCADE),
+		);
+	}
+
+	public function defineIndexes()
+	{
+		return array(
+			array('columns' => array('accessKey'), 'unique' => true),
 		);
 	}
 
