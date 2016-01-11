@@ -11,8 +11,12 @@ class DigitalDownloadService extends BaseApplicationComponent
 		return md5(microtime());
 	}
 
-	public function generateAccessKey(AssetFileModel $file, $ttl = 'P15D')
+	public function generateAccessKey(AssetFileModel $file, $options = array())
 	{
+		// Load options
+		$ttl          = $this->_setValue($options, 'ttl',         'P15D' );
+		$maxDownloads = $this->_setValue($options, 'maxDownloads', 0     );
+
 		// Generate access key
 		$accessKey = $this->hash();
 
@@ -21,16 +25,17 @@ class DigitalDownloadService extends BaseApplicationComponent
 
 		$linkRecord = new DigitalDownload_LinkRecord();
 
-		$linkRecord->assetId   = $file->id;
-		$linkRecord->accessKey = $accessKey;
-		$linkRecord->expires   = $expires;
+		$linkRecord->assetId      = $file->id;
+		$linkRecord->accessKey    = $accessKey;
+		$linkRecord->expires      = $expires;
+		$linkRecord->maxDownloads = $maxDownloads;
 
 		$linkRecord->save();
 
 		return $accessKey;
 	}
 
-	public function link($accessKey)
+	public function linkData($accessKey)
 	{
 		$linkRecord = $this->_linkRecord($accessKey);
 		return DigitalDownload_LinkModel::populateModel($linkRecord);
@@ -45,7 +50,12 @@ class DigitalDownloadService extends BaseApplicationComponent
 		return $linkRecord->save();
 	}
 
-	public function markLinksExpired()
+	public function cleanup()
+	{
+		$this->disableExpiredLinks();
+	}
+
+	public function disableExpiredLinks()
 	{
 		craft()->db->createCommand()->update(
 			'digitaldownload_links',
@@ -57,10 +67,10 @@ class DigitalDownloadService extends BaseApplicationComponent
 	/*
 	 * Should this method be scrapped?
 	 *
-	 * Delete all expired links from database.
+	 * Deletes all expired links from database.
 	 */
 	/*
-	public function pruneLinks()
+	public function deleteExpiredLinks()
 	{
 		craft()->db->createCommand()->delete(
 			'digitaldownload_links',
@@ -86,6 +96,11 @@ class DigitalDownloadService extends BaseApplicationComponent
 			$log->downloaded = new DateTime();
 			$log->save();
 		}
+	}
+
+	private function _setValue($options, $key, $default)
+	{
+		return (array_key_exists($key, $options) ? $options[$key] : $default);
 	}
 
 }

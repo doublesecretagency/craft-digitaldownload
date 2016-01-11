@@ -4,13 +4,13 @@ namespace Craft;
 class DigitalDownloadController extends BaseController
 {
 
-	protected $allowAnonymous = array('actionDownload','actionMarkLinksExpired');
+	protected $allowAnonymous = array('actionDownload','actionCleanup');
 
 	public function actionDownload()
 	{
 		$accessKey = craft()->request->getQuery('u');
-		$link = craft()->digitalDownload->link($accessKey);
-		$asset = $link->asset();
+		$linkData = craft()->digitalDownload->linkData($accessKey);
+		$asset = $linkData->asset();
 		craft()->digitalDownload->trackDownload($accessKey);
 		$this->_outputFile($asset);
 	}
@@ -25,9 +25,9 @@ class DigitalDownloadController extends BaseController
 
 	/* Should this action even exist? */
 	/*
-	public function actionMarkLinksExpired()
+	public function actionCleanup()
 	{
-		craft()->digitalDownload->markLinksExpired();
+		craft()->digitalDownload->cleanup();
 	}
 	*/
 
