@@ -14,7 +14,7 @@ class DigitalDownloadService extends BaseApplicationComponent
 	public function generateAccessKey(AssetFileModel $file, $options = array())
 	{
 		// Load options
-		$ttl          = $this->_setValue($options, 'ttl',         'P15D' );
+		$ttl          = $this->_setValue($options, 'ttl',         'P14D' );
 		$maxDownloads = $this->_setValue($options, 'maxDownloads', 0     );
 
 		// Generate access key
@@ -101,6 +101,56 @@ class DigitalDownloadService extends BaseApplicationComponent
 	private function _setValue($options, $key, $default)
 	{
 		return (array_key_exists($key, $options) ? $options[$key] : $default);
+	}
+
+	// ========================================================================= //
+
+	public function actionUrl($accessKey)
+	{
+		return UrlHelper::getActionUrl(
+			'digitalDownload/download',
+			array('u' => $accessKey)
+		);
+	}
+
+	public function downloadUrl($file, $options = array())
+	{
+		$accessKey = $this->_fileOrKey($file, $options);
+		if ($accessKey) {
+			return $this->actionUrl($accessKey);
+		} else {
+			return '[invalid access key]';
+		}
+	}
+
+	public function downloadLink($file, $options = array())
+	{
+		$url   = $this->downloadUrl($file, $options);
+		$label = $this->_setValue($options, 'label', 'Download');
+
+		return TemplateHelper::getRaw('<a href="'.$url.'">'.$label.'</a>');
+	}
+
+	// ========================================================================= //
+
+	// Ensures that we're working with an access key
+	private function _fileOrKey($file, $options = array())
+	{
+		// Parse access key based on what $file is
+		if (is_a($file, 'Craft\\AssetFileModel')) {
+
+			// If $file is an asset, generate key
+			return $this->generateAccessKey($file, $options);
+
+		} else if (is_string($file)) {
+
+			// If $file is a key, use key
+			return $file;
+
+		}
+
+		// Otherwise, $file is invalid
+		return false;
 	}
 
 }
