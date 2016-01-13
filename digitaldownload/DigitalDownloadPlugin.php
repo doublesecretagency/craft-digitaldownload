@@ -17,17 +17,17 @@ class DigitalDownloadPlugin extends BasePlugin
 
 	public function getDescription()
 	{
-		return '';
+		return 'A secure way to provide digital download links to your files.';
 	}
 
 	public function getDocumentationUrl()
 	{
-		return '';
+		return 'https://craftpl.us/plugins/digital-download';
 	}
 
 	public function getVersion()
 	{
-		return '0.5.0';
+		return '0.5.1';
 	}
 
 	public function getSchemaVersion()
@@ -56,12 +56,7 @@ class DigitalDownloadPlugin extends BasePlugin
 	protected function defineSettings()
 	{
 		return array(
-			// 'maxStarsAvailable' => array(AttributeType::Number, 'default' => 5),
-			// 'requireLogin'      => array(AttributeType::Bool,   'default' => true),
-			// 'allowHalfStars'    => array(AttributeType::Bool,   'default' => true),
-			// 'allowRatingChange' => array(AttributeType::Bool,   'default' => true),
-			// 'allowFontAwesome'  => array(AttributeType::Bool,   'default' => true),
-			'keepDownloadLog'     => array(AttributeType::Bool,   'default' => false),
+			'keepDownloadLog' => array(AttributeType::Bool, 'default' => false),
 		);
 	}
 
