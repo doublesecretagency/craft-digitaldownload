@@ -21,7 +21,7 @@ class DigitalDownload_DownloadLogRecord extends BaseRecord
 	public function defineRelations()
 	{
 		return array(
-			'link' => array(static::BELONGS_TO, 'DigitalDownload_LinkRecord', 'required' => true, 'onDelete' => static::CASCADE),
+			'link' => array(static::BELONGS_TO, 'DigitalDownload_TokenRecord', 'required' => true, 'onDelete' => static::CASCADE),
 		);
 	}
 

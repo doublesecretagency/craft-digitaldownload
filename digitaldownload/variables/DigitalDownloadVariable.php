@@ -4,21 +4,24 @@ namespace Craft;
 class DigitalDownloadVariable
 {
 
-	public function generateAccessKey(AssetFileModel $file, $options = array())
+	// Create a token for a file
+	public function createToken(AssetFileModel $file, $options = array())
 	{
-		return craft()->digitalDownload->generateAccessKey($file, $options);
+		return craft()->digitalDownload->createToken($file, $options);
 	}
 
 	// ========================================================================= //
 
-	public function downloadUrl($file, $options = array())
+	// Generates a URL to download the file
+	public function url($token, $options = array())
 	{
-		return craft()->digitalDownload->downloadUrl($file, $options);
+		return craft()->digitalDownload->url($token, $options);
 	}
 
-	public function downloadLink($file, $options = array())
+	// Generates a full HTML <a> tag
+	public function link($token, $options = array())
 	{
-		return craft()->digitalDownload->downloadLink($file, $options);
+		return craft()->digitalDownload->link($token, $options);
 	}
 
 }

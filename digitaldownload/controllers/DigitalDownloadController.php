@@ -8,10 +8,10 @@ class DigitalDownloadController extends BaseController
 
 	public function actionDownload()
 	{
-		$accessKey = craft()->request->getQuery('u');
-		$linkData = craft()->digitalDownload->linkData($accessKey);
+		$token = craft()->request->getQuery('u');
+		$linkData = craft()->digitalDownload->linkData($token);
 		$asset = $linkData->asset();
-		craft()->digitalDownload->trackDownload($accessKey);
+		craft()->digitalDownload->trackDownload($token);
 		$this->_outputFile($asset);
 	}
 

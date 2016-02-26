@@ -1,18 +1,18 @@
 <?php
 namespace Craft;
 
-class DigitalDownload_LinkRecord extends BaseRecord
+class DigitalDownload_TokenRecord extends BaseRecord
 {
 
 	public function getTableName()
 	{
-		return 'digitaldownload_links';
+		return 'digitaldownload_tokens';
 	}
 
 	protected function defineAttributes()
 	{
 		return array(
-			'accessKey'      => array(AttributeType::String),
+			'token'          => array(AttributeType::String),
 			'enabled'        => array(AttributeType::Bool,     'default' => true),
 			'expires'        => array(AttributeType::DateTime, 'default' => null),
 			'lastDownloaded' => array(AttributeType::DateTime, 'default' => null),
@@ -31,7 +31,7 @@ class DigitalDownload_LinkRecord extends BaseRecord
 	public function defineIndexes()
 	{
 		return array(
-			array('columns' => array('accessKey'), 'unique' => true),
+			array('columns' => array('token'), 'unique' => true),
 		);
 	}
 

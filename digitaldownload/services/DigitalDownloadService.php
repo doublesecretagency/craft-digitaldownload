@@ -11,39 +11,39 @@ class DigitalDownloadService extends BaseApplicationComponent
 		return md5(microtime());
 	}
 
-	public function generateAccessKey(AssetFileModel $file, $options = array())
+	public function createToken(AssetFileModel $file, $options = array())
 	{
 		// Load options
 		$ttl          = $this->_setValue($options, 'ttl',         'P14D' );
 		$maxDownloads = $this->_setValue($options, 'maxDownloads', 0     );
 
-		// Generate access key
-		$accessKey = $this->hash();
+		// Generate token
+		$token = $this->hash();
 
 		$expires = new DateTime();
 		$expires = $expires->add(new DateInterval($ttl));
 
-		$linkRecord = new DigitalDownload_LinkRecord();
+		$linkRecord = new DigitalDownload_TokenRecord();
 
 		$linkRecord->assetId      = $file->id;
-		$linkRecord->accessKey    = $accessKey;
+		$linkRecord->token        = $token;
 		$linkRecord->expires      = $expires;
 		$linkRecord->maxDownloads = $maxDownloads;
 
 		$linkRecord->save();
 
-		return $accessKey;
+		return $token;
 	}
 
-	public function linkData($accessKey)
+	public function linkData($token)
 	{
-		$linkRecord = $this->_linkRecord($accessKey);
-		return DigitalDownload_LinkModel::populateModel($linkRecord);
+		$linkRecord = $this->_linkRecord($token);
+		return DigitalDownload_TokenModel::populateModel($linkRecord);
 	}
 
-	public function trackDownload($accessKey)
+	public function trackDownload($token)
 	{
-		$linkRecord = $this->_linkRecord($accessKey);
+		$linkRecord = $this->_linkRecord($token);
 		$linkRecord->totalDownloads++;
 		$linkRecord->lastDownloaded = new DateTime();
 		$this->_logDownload($linkRecord);
@@ -81,10 +81,10 @@ class DigitalDownloadService extends BaseApplicationComponent
 
 	// ========================================================================= //
 
-	private function _linkRecord($accessKey)
+	private function _linkRecord($token)
 	{
-		return DigitalDownload_LinkRecord::model()->findByAttributes(array(
-			'accessKey' => $accessKey
+		return DigitalDownload_TokenRecord::model()->findByAttributes(array(
+			'token' => $token
 		));
 	}
 
@@ -105,27 +105,24 @@ class DigitalDownloadService extends BaseApplicationComponent
 
 	// ========================================================================= //
 
-	public function actionUrl($accessKey)
+	// Generates a URL to download the file
+	public function url($token, $options = array())
 	{
-		return UrlHelper::getActionUrl(
-			'digitalDownload/download',
-			array('u' => $accessKey)
-		);
-	}
-
-	public function downloadUrl($file, $options = array())
-	{
-		$accessKey = $this->_fileOrKey($file, $options);
-		if ($accessKey) {
-			return $this->actionUrl($accessKey);
+		$token = $this->_tokenOrFile($token, $options);
+		if ($token) {
+			return UrlHelper::getActionUrl(
+				'digitalDownload/download',
+				array('u' => $token)
+			);
 		} else {
-			return '[invalid access key]';
+			return '[invalid token]';
 		}
 	}
 
-	public function downloadLink($file, $options = array())
+	// Generates a full HTML <a> tag
+	public function link($token, $options = array())
 	{
-		$url   = $this->downloadUrl($file, $options);
+		$url   = $this->url($token, $options);
 		$label = $this->_setValue($options, 'label', 'Download');
 
 		return TemplateHelper::getRaw('<a href="'.$url.'">'.$label.'</a>');
@@ -133,24 +130,22 @@ class DigitalDownloadService extends BaseApplicationComponent
 
 	// ========================================================================= //
 
-	// Ensures that we're working with an access key
-	private function _fileOrKey($file, $options = array())
+	// Ensures that we're working with a proper token
+	private function _tokenOrFile($token, $options = array())
 	{
-		// Parse access key based on what $file is
-		if (is_a($file, 'Craft\\AssetFileModel')) {
+		// If $token is a token, use the token
+		if (is_string($token)) {
+			return $token;
 
-			// If $file is an asset, generate key
-			return $this->generateAccessKey($file, $options);
+		// If $token is an asset, create a token
+		} else if (is_a($token, 'Craft\\AssetFileModel')) {
+			return $this->createToken($token, $options);
 
-		} else if (is_string($file)) {
-
-			// If $file is a key, use key
-			return $file;
+		// Else, $token is invalid
+		} else {
+			return false;
 
 		}
-
-		// Otherwise, $file is invalid
-		return false;
 	}
 
 }
