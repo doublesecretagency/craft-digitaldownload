@@ -14,11 +14,10 @@ class DigitalDownload_LogRecord extends BaseRecord
 		return array(
 			'tokenId'    => AttributeType::Number,
 			'assetId'    => AttributeType::Number,
-			'downloaded' => array(AttributeType::DateTime, 'default' => null),
-			'success'    => array(AttributeType::Bool,     'default' => false),
-			'error'      => array(AttributeType::String,   'default' => ''),
-			// 'userId' => AttributeType::Number,
-			// 'ipAddress' => AttributeType::String,
+			'userId'     => array(AttributeType::Number, 'default' => null),
+			'ipAddress'  => array(AttributeType::String, 'default' => null),
+			'success'    => array(AttributeType::Bool,   'default' => false),
+			'error'      => array(AttributeType::String, 'default' => ''),
 		);
 	}
 

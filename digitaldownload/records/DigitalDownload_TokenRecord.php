@@ -15,9 +15,10 @@ class DigitalDownload_TokenRecord extends BaseRecord
 			'token'          => array(AttributeType::String),
 			'enabled'        => array(AttributeType::Bool,     'default' => true),
 			'expires'        => array(AttributeType::DateTime, 'default' => null),
-			'lastDownloaded' => array(AttributeType::DateTime, 'default' => null),
-			'totalDownloads' => array(AttributeType::Number,   'default' => 0),
+			'requireUser'    => array(AttributeType::String,   'default' => null),
 			'maxDownloads'   => array(AttributeType::Number,   'default' => 0),
+			'totalDownloads' => array(AttributeType::Number,   'default' => 0),
+			'lastDownloaded' => array(AttributeType::DateTime, 'default' => null),
 		);
 	}
 

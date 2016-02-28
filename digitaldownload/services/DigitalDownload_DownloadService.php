@@ -36,9 +36,12 @@ class DigitalDownload_DownloadService extends BaseApplicationComponent
 
 		// Initialize log record
 		if ($logging) {
+			$currentUser = craft()->userSession->getUser();
 			$log = new DigitalDownload_LogRecord();
-			$log->tokenId = $tokenRecord->id;
-			$log->assetId = $tokenRecord->assetId;
+			$log->tokenId   = $tokenRecord->id;
+			$log->assetId   = $tokenRecord->assetId;
+			$log->userId    = ($currentUser ? $currentUser->id : null);
+			$log->ipAddress = $_SERVER['REMOTE_ADDR'];
 		}
 
 		// If no errors
@@ -51,8 +54,7 @@ class DigitalDownload_DownloadService extends BaseApplicationComponent
 
 			// Log success
 			if ($logging) {
-				$log->success    = true;
-				$log->downloaded = new DateTime();
+				$log->success = true;
 				$log->save();
 			}
 
