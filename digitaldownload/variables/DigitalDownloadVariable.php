@@ -19,9 +19,9 @@ class DigitalDownloadVariable
 	}
 
 	// Generates a full HTML <a> tag
-	public function link($token, $options = array())
+	public function link($token, $options = array(), $label = 'Download')
 	{
-		return craft()->digitalDownload->link($token, $options);
+		return craft()->digitalDownload->link($token, $options, $label);
 	}
 
 }

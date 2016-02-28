@@ -9,18 +9,7 @@ class DigitalDownloadController extends BaseController
 	public function actionDownload()
 	{
 		$token = craft()->request->getQuery('u');
-		$linkData = craft()->digitalDownload->linkData($token);
-		$asset = $linkData->asset();
-		craft()->digitalDownload->trackDownload($token);
-		$this->_outputFile($asset);
-	}
-
-	private function _outputFile($asset)
-	{
-		header("Content-type: application/octet-stream");
-		header("Content-disposition: attachment; filename=".$asset->filename);
-		echo file_get_contents($asset->url);
-		exit;
+		craft()->digitalDownload_download->startDownload($token);
 	}
 
 	/* Should this action even exist? */

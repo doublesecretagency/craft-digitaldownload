@@ -1,7 +1,7 @@
 <?php
 namespace Craft;
 
-class DigitalDownload_TokenModel extends BaseModel
+class DigitalDownload_LinkModel extends BaseModel
 {
 
 	public function __toString()
@@ -18,6 +18,7 @@ class DigitalDownload_TokenModel extends BaseModel
 			'expires'        => AttributeType::DateTime,
 			'totalDownloads' => AttributeType::Number,
 			'lastDownloaded' => AttributeType::DateTime,
+			'error'          => AttributeType::String,
 		);
 	}
 
@@ -34,7 +35,7 @@ class DigitalDownload_TokenModel extends BaseModel
 	}
 
 	// Generates a full HTML <a> tag
-	public function link($options = array())
+	public function html($options = array())
 	{
 		return craft()->digitalDownload->link($this->token, $options);
 	}
