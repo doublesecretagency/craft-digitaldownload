@@ -20,7 +20,10 @@ class DigitalDownload_DownloadService extends BaseApplicationComponent
 			// Download file
 			$this->_outputFile($link);
 		} else {
+			// Log & output error message
 			DigitalDownloadPlugin::log("Unable to download with token {$token}. {$link->error}", LogLevel::Warning);
+			echo craft()->templates->renderString($link->error);
+			exit;
 		}
 	}
 
@@ -87,13 +90,16 @@ class DigitalDownload_DownloadService extends BaseApplicationComponent
 
 	public function authorized($link)
 	{
-		if ($this->_isExpired($link)) {
+		if (!$this->_isEnabled($link)) {
+			$link->error = 'Link is disabled.';
+			return false;
+		} else if (!$this->_isUnexpired($link)) {
 			$link->error = 'Link has expired.';
 			return false;
-		} else if ($this->_isOverMaxDownloads($link)) {
+		} else if (!$this->_isUnderMaxDownloads($link)) {
 			$link->error = 'Link has reached max downloads.';
 			return false;
-		} else if ($this->_isNotAuthorizedUser($link)) {
+		} else if (!$this->_isAuthorizedUser($link)) {
 			$link->error = 'User is not authorized.';
 			return false;
 		}
@@ -102,22 +108,28 @@ class DigitalDownload_DownloadService extends BaseApplicationComponent
 		return true;
 	}
 
-	// Check whether link has expired
-	private function _isExpired($link)
+	// Check whether link is enabled
+	private function _isEnabled($link)
 	{
-		return false;
+		return true;
 	}
 
-	// Check whether link has reached maximum downloads
-	private function _isOverMaxDownloads($link)
+	// Check whether link has not yet expired
+	private function _isUnexpired($link)
 	{
-		return false;
+		return true;
+	}
+
+	// Check whether link is under maximum downloads
+	private function _isUnderMaxDownloads($link)
+	{
+		return ($link->totalDownloads < $link->maxDownloads);
 	}
 
 	// Check whether user is authorized
-	private function _isNotAuthorizedUser($link)
+	private function _isAuthorizedUser($link)
 	{
-		return false;
+		return true;
 	}
 
 }
