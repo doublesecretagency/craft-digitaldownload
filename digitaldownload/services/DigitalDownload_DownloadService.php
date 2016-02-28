@@ -111,7 +111,7 @@ class DigitalDownload_DownloadService extends BaseApplicationComponent
 	// Check whether link is enabled
 	private function _isEnabled($link)
 	{
-		return true;
+		return $link->enabled;
 	}
 
 	// Check whether link has not yet expired
@@ -123,7 +123,11 @@ class DigitalDownload_DownloadService extends BaseApplicationComponent
 	// Check whether link is under maximum downloads
 	private function _isUnderMaxDownloads($link)
 	{
-		return ($link->totalDownloads < $link->maxDownloads);
+		if ($link->maxDownloads) {
+			return ($link->totalDownloads < $link->maxDownloads);
+		} else {
+			return true;
+		}
 	}
 
 	// Check whether user is authorized
