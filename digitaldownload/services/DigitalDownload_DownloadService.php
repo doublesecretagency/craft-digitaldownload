@@ -117,7 +117,8 @@ class DigitalDownload_DownloadService extends BaseApplicationComponent
 	// Check whether link has not yet expired
 	private function _isUnexpired($link)
 	{
-		return true;
+		$now = new DateTime;
+		return ($now->getTimestamp() < $link->expires->getTimestamp());
 	}
 
 	// Check whether link is under maximum downloads

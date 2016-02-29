@@ -7,15 +7,15 @@ class DigitalDownload_TokenService extends BaseApplicationComponent
 	public function createToken(AssetFileModel $file, $options = array())
 	{
 		// Load options
-		$ttl          = $this->_setValue($options, 'ttl',         'P14D' );
-		$maxDownloads = $this->_setValue($options, 'maxDownloads', 0     );
+		$expires      = $this->_setValue($options, 'expires',     'P14D');
+		$maxDownloads = $this->_setValue($options, 'maxDownloads', 0    );
 
 		// Generate token
 		$token = craft()->digitalDownload->hash();
 
 		// Set expiration date
-		$expires = new DateTime();
-		$expires = $expires->add(new DateInterval($ttl));
+		$ttl = new DateTime();
+		$ttl = $ttl->add(new DateInterval($expires));
 
 		// Create new token record
 		$linkRecord = new DigitalDownload_TokenRecord();
@@ -23,7 +23,7 @@ class DigitalDownload_TokenService extends BaseApplicationComponent
 		// Configure token record
 		$linkRecord->assetId      = $file->id;
 		$linkRecord->token        = $token;
-		$linkRecord->expires      = $expires;
+		$linkRecord->expires      = $ttl;
 		$linkRecord->maxDownloads = $maxDownloads;
 
 		// Save token record
