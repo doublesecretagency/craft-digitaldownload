@@ -27,7 +27,7 @@ class DigitalDownloadPlugin extends BasePlugin
 
 	public function getVersion()
 	{
-		return '0.8.5';
+		return '0.9.0';
 	}
 
 	public function getSchemaVersion()
