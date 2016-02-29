@@ -17,6 +17,7 @@ class DigitalDownload_LinkModel extends BaseModel
 			'token'          => AttributeType::String,
 			'enabled'        => AttributeType::Bool,
 			'expires'        => AttributeType::DateTime,
+			'requireUser'    => AttributeType::String,
 			'maxDownloads'   => AttributeType::Number,
 			'totalDownloads' => AttributeType::Number,
 			'lastDownloaded' => AttributeType::DateTime,

@@ -4,6 +4,9 @@ namespace Craft;
 class DigitalDownload_DownloadService extends BaseApplicationComponent
 {
 
+	private $_currentUserId     = null;
+	private $_currentUserGroups = null;
+
 	public function startDownload($token)
 	{
 		// Get link data
@@ -134,7 +137,76 @@ class DigitalDownload_DownloadService extends BaseApplicationComponent
 	// Check whether user is authorized
 	private function _isAuthorizedUser($link)
 	{
-		return true;
+		// Load current user info
+		$this->_loadUserData();
+
+		// Decode user requirements
+		$requirement = json_decode($link->requireUser);
+
+		// All access granted (including anonymous)
+		if (null === $requirement) {
+			return true;
+
+		// Must be logged in
+		} else if ('*' === $requirement) {
+			return (bool) $this->_currentUserId;
+
+		// Must be this user
+		} else if (is_numeric($requirement)) {
+			return $this->_isCurrentUser($requirement);
+
+		// Must be in this user group
+		} else if (is_string($requirement)) {
+			return $this->_isCurrentUserInGroup($requirement);
+
+		// Multiple users or groups
+		} else if (is_array($requirement)) {
+			foreach ($requirement as $userOrGroup) {
+
+				// Must be this user
+				if (is_numeric($userOrGroup)) {
+					if ($this->_isCurrentUser($userOrGroup)) {
+						return true;
+					}
+
+				// Must be in this user group
+				} else if (is_string($userOrGroup)) {
+					if ($this->_isCurrentUserInGroup($userOrGroup)) {
+						return true;
+					}
+				}
+
+			}
+		}
+
+		// Failed the test
+		return false;
+
+	}
+
+	// Check whether user is current user
+	private function _isCurrentUser($userId)
+	{
+		return ($this->_currentUserId == $userId);
+	}
+
+	// Check whether current user is in a group
+	private function _isCurrentUserInGroup($group)
+	{
+		return in_array($group, $this->_currentUserGroups);
+	}
+
+	// Load data for current user
+	private function _loadUserData()
+	{
+		$user = craft()->userSession->getUser();
+		if ($user && !$this->_currentUserId) {
+			$this->_currentUserId = $user->id;
+			$this->_currentUserGroups = array();
+			foreach ($user->groups as $group) {
+				$this->_currentUserGroups[] = $group->handle;
+			}
+		}
 	}
 
 }
