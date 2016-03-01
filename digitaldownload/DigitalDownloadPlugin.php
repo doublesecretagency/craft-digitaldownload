@@ -17,7 +17,7 @@ class DigitalDownloadPlugin extends BasePlugin
 
 	public function getDescription()
 	{
-		return 'A secure way to provide digital download links to your files.';
+		return 'Provide secure digital download links to your files.';
 	}
 
 	public function getDocumentationUrl()
@@ -27,7 +27,7 @@ class DigitalDownloadPlugin extends BasePlugin
 
 	public function getVersion()
 	{
-		return '0.9.0';
+		return '1.0.0';
 	}
 
 	public function getSchemaVersion()
