@@ -26,7 +26,7 @@ class DigitalDownload_DownloadService extends BaseApplicationComponent
 			// Log & output error message
 			DigitalDownloadPlugin::log("Unable to download with token {$token}. {$link->error}", LogLevel::Warning);
 			echo craft()->templates->renderString($link->error);
-			exit;
+			craft()->end();
 		}
 	}
 
