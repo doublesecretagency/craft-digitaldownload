@@ -8,7 +8,7 @@ class DigitalDownloadService extends BaseApplicationComponent
 
 	public function hash()
 	{
-		return md5(str_shuffle(microtime()));
+		return StringHelper::randomString();
 	}
 
 	public function createToken(AssetFileModel $file, $options = array())
