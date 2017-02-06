@@ -199,10 +199,10 @@ class DigitalDownload_DownloadService extends BaseApplicationComponent
 	// Load data for current user
 	private function _loadUserData()
 	{
+		$this->_currentUserGroups = array();
 		$user = craft()->userSession->getUser();
 		if ($user && !$this->_currentUserId) {
 			$this->_currentUserId = $user->id;
-			$this->_currentUserGroups = array();
 			foreach ($user->groups as $group) {
 				$this->_currentUserGroups[] = $group->handle;
 			}
