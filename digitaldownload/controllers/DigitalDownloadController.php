@@ -4,11 +4,17 @@ namespace Craft;
 class DigitalDownloadController extends BaseController
 {
 
-	protected $allowAnonymous = array('actionDownload','actionCleanup');
+	protected $allowAnonymous = array('actionDownload','actionShortPath','actionCleanup');
 
 	public function actionDownload()
 	{
 		$token = craft()->request->getQuery('u');
+		craft()->digitalDownload_download->startDownload($token);
+	}
+
+	public function actionShortPath(array $variables = array())
+	{
+		$token = $variables['token'];
 		craft()->digitalDownload_download->startDownload($token);
 	}
 

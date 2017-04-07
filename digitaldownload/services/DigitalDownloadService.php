@@ -22,12 +22,26 @@ class DigitalDownloadService extends BaseApplicationComponent
 	public function url($token, $options = array())
 	{
 		$token = $this->_tokenOrFile($token, $options);
+		// If token exists
 		if ($token) {
-			return UrlHelper::getActionUrl(
-				'digitalDownload/download',
-				array('u' => $token)
-			);
+			// Get short path
+			$shortPath = craft()->digitalDownload->settings->shortPath;
+			$shortPath = trim($shortPath, ' /');
+			// If short path exists
+			if ($shortPath) {
+				// Use short path
+				return UrlHelper::getSiteUrl(
+					$shortPath.'/'.$token
+				);
+			} else {
+				// Use long path
+				return UrlHelper::getActionUrl(
+					'digitalDownload/download',
+					array('u' => $token)
+				);
+			}
 		} else {
+			// Output error message
 			return '[invalid token]';
 		}
 	}

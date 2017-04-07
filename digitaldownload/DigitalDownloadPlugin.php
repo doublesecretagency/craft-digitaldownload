@@ -27,7 +27,7 @@ class DigitalDownloadPlugin extends BasePlugin
 
 	public function getVersion()
 	{
-		return '1.0.1 rc 3';
+		return '1.0.1 rc 4';
 	}
 
 	public function getSchemaVersion()
@@ -56,8 +56,20 @@ class DigitalDownloadPlugin extends BasePlugin
 	protected function defineSettings()
 	{
 		return array(
+			'shortPath'       => array(AttributeType::String, 'label' => 'Short Path', 'default' => 'download'),
 			'keepDownloadLog' => array(AttributeType::Bool, 'default' => false),
 		);
+	}
+
+	public function registerSiteRoutes()
+	{
+		$shortPath = craft()->digitalDownload->settings->shortPath;
+		$shortPath = trim($shortPath, ' /');
+		if ($shortPath) {
+			return array(
+				$shortPath.'/(?P<token>[a-zA-Z0-9]+)' => array('action' => 'digitalDownload/shortPath'),
+			);
+		}
 	}
 
 }
