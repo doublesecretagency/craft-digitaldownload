@@ -20,11 +20,6 @@ class DigitalDownloadPlugin extends BasePlugin
 		return 'Provide secure digital download links to your files.';
 	}
 
-	public function getDocumentationUrl()
-	{
-		return 'https://craftpl.us/plugins/digital-download';
-	}
-
 	public function getVersion()
 	{
 		return '1.1.0 rc 4';
@@ -42,8 +37,12 @@ class DigitalDownloadPlugin extends BasePlugin
 
 	public function getDeveloperUrl()
 	{
-		return 'https://craftpl.us/plugins/digital-download';
-		//return 'http://doublesecretagency.com';
+		return 'https://www.doublesecretagency.com/plugins';
+	}
+
+	public function getDocumentationUrl()
+	{
+		return 'https://www.doublesecretagency.com/plugins/digital-download/docs';
 	}
 
 	public function getSettingsHtml()
