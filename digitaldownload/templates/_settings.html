@@ -1,9 +1,16 @@
 {% import '_includes/forms' as forms %}
 {% includeJsResource 'digitaldownload/js/settings.js' %}
 
+{% set actionTrigger = craft.config.get('actionTrigger') %}
+{% set longPath = 'index.php/' ~ actionTrigger ~ '/digitalDownload/download?u=' %}
+
+{% includejs %}
+var longPath = '{{ longPath }}';
+{% endincludejs %}
+
 <h2>{{ "Short Download Links"|t }}</h2>
 
-{% set path = (settings.shortPath ? settings.shortPath ~ '/' : 'index.php/actions/digitalDownload/download?u=') %}
+{% set path = (settings.shortPath ? settings.shortPath ~ '/' : longPath) %}
 
 {{ forms.textField({
 	instructions: "Set a short path for download URLs. If you leave this blank, the long path will be used by default."|t,
@@ -13,7 +20,7 @@
 	errors: settings.getErrors('shortPath')
 }) }}
 
-<p><a href="#" onclick="alert('File download initiated...')">{{ siteUrl }}<span id="demo-path">{{ path }}</span>(token)</a></p>
+<p><a href="#" onclick="alert('Example download initiated...')">{{ siteUrl }}<span id="demo-path">{{ path }}</span>(token)</a></p>
 
 <hr/>
 

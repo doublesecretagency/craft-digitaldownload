@@ -1,7 +1,4 @@
-var longPath = 'index.php/actions/digitalDownload/download?u=';
-
-// =================================================================== //
-
+// Automatically update path as it is changed
 function updateDemoPath() {
 	// Get current value
 	var demoPath = $('#settings-shortPath').val();
