@@ -1,0 +1,39 @@
+{
+    "name": "doublesecretagency/craft-digitaldownload",
+    "description": "Provide secure digital download links to your files.",
+    "type": "craft-plugin",
+    "version": "2.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "digital-download",
+        "download",
+        "file"
+    ],
+    "support": {
+        "docs": "https://www.doublesecretagency.com/plugins/digital-download/docs",
+        "issues": "https://github.com/doublesecretagency/craft-digitaldownload/issues"
+    },
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Double Secret Agency",
+            "homepage": "https://www.doublesecretagency.com/plugins"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "doublesecretagency\\digitaldownload\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Digital Download",
+        "handle": "digital-download",
+        "class": "doublesecretagency\\digitaldownload\\DigitalDownload"
+    }
+}
