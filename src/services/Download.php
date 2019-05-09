@@ -109,11 +109,24 @@ class Download extends Component
     {
         $asset = $link->asset();
         if ($asset) {
+
             header('Content-type: application/octet-stream');
             header('Content-disposition: attachment; filename='.$asset->filename);
-            echo file_get_contents($asset->url);
+            header("Content-Length: " . $asset->size);
+
+            $assetFilePath = $this->_getAssetFilePath($asset);
+            readfile($assetFilePath);
             exit;
         }
+    }
+
+    private function _getAssetFilePath($asset)
+    {
+        $volumePath = $asset->getVolume()->settings['path'];
+        $folderPath = $asset->getFolder()->path . '/';
+        $assetFilePath = Craft::getAlias($volumePath) . $folderPath . $asset->filename;
+
+        return $assetFilePath;
     }
 
     // ========================================================================
