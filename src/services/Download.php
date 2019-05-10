@@ -161,8 +161,16 @@ class Download extends Component
     // Check whether link has not yet expired
     private function _isUnexpired($link)
     {
-        $expires = new \DateTime($link->expires);
-        return (time() < (int) $expires->format('U'));
+        // Current timestamp
+        $current = new \DateTime();
+        $now = (int) $current->format('U');
+
+        // Expiration timestamp
+        $expires = new \DateTime($link->expires, new \DateTimeZone('UTC'));
+        $end = (int) $expires->format('U');
+
+        // Whether link has expired
+        return ($now < $end);
     }
 
     // Check whether link is under maximum downloads
