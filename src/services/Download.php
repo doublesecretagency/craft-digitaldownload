@@ -17,6 +17,7 @@ use craft\base\Component;
 use doublesecretagency\digitaldownload\DigitalDownload;
 use doublesecretagency\digitaldownload\records\Log as LogRecord;
 use doublesecretagency\digitaldownload\records\Token as TokenRecord;
+use yii\web\HttpException;
 
 /**
  * Class Download
@@ -47,8 +48,7 @@ class Download extends Component
             // Log & output error message
             $error = (string) $link->error;
 //            DigitalDownloadPlugin::log("Unable to download with token {$token}. {$error}", LogLevel::Warning);
-            echo Craft::$app->getView()->renderString($error);
-            Craft::$app->end();
+            throw new HttpException(403, $error);
         }
     }
 
@@ -133,19 +133,19 @@ class Download extends Component
     public function authorized($link)
     {
         if (!$this->_isEnabled($link)) {
-            $link->error = 'Link is disabled.';
+            $link->error = 'Download link is disabled.';
             return false;
         }
         if (!$this->_isUnexpired($link)) {
-            $link->error = 'Link has expired.';
+            $link->error = 'Download link has expired.';
             return false;
         }
         if (!$this->_isUnderMaxDownloads($link)) {
-            $link->error = 'Link has reached max downloads.';
+            $link->error = 'Maximum downloads have been reached.';
             return false;
         }
         if (!$this->_isAuthorizedUser($link)) {
-            $link->error = 'User is not authorized.';
+            $link->error = 'User is not authorized to download file.';
             return false;
         }
         // Passed all checks
