@@ -13,7 +13,9 @@ namespace doublesecretagency\digitaldownload\services;
 
 use Craft;
 use craft\base\Component;
-
+use craft\elements\Asset;
+use craft\helpers\App;
+use craft\volumes\Local;
 use doublesecretagency\digitaldownload\DigitalDownload;
 use doublesecretagency\digitaldownload\records\Log as LogRecord;
 use doublesecretagency\digitaldownload\records\Token as TokenRecord;
@@ -31,6 +33,11 @@ class Download extends Component
 
     public function startDownload($token)
     {
+        // If no token, throw error message
+        if (!$token) {
+            throw new HttpException(403, 'No download token provided.');
+        }
+
         // Get link data
         $link = DigitalDownload::$plugin->digitalDownload->getLinkData($token);
 
@@ -40,16 +47,20 @@ class Download extends Component
         // Track download attempt
         $this->trackDownload($link);
 
-        // If authorized
+        // If authorized, attempt file download
         if ($authorized) {
-            // Download file
             $this->_outputFile($link);
-        } else {
-            // Log & output error message
-            $error = (string) $link->error;
-//            DigitalDownloadPlugin::log("Unable to download with token {$token}. {$error}", LogLevel::Warning);
-            throw new HttpException(403, $error);
         }
+
+        // If something went wrong with the download
+        if (!$link->error) {
+            $link->error = 'Unknown error when downloading file.';
+        }
+
+        // Something went wrong, throw error message
+        $error = (string) $link->error;
+//      DigitalDownloadPlugin::log("Unable to download with token {$token}. {$error}", LogLevel::Warning);
+        throw new HttpException(403, $error);
     }
 
     public function trackDownload($link)
@@ -107,25 +118,80 @@ class Download extends Component
 
     private function _outputFile($link)
     {
+        // Get asset of link
         $asset = $link->asset();
-        if ($asset) {
 
-            header('Content-type: application/octet-stream');
-            header('Content-disposition: attachment; filename='.$asset->filename);
-            header('Content-Length: '.$asset->size);
-
-            $assetFilePath = $this->_getAssetFilePath($asset);
-            readfile($assetFilePath);
-            exit;
+        // If no asset, bail
+        if (!$asset) {
+            $link->error = 'Link is missing an associated asset.';
+            return;
         }
+
+        // Determine volume type
+        if (get_class($asset->getVolume()) == Local::class) {
+
+            // Get asset path info
+            $volumePath = $asset->getVolume()->settings['path'];
+            $folderPath = $asset->getFolder()->path.'/';
+
+            // Set path for local file
+            $assetFilePath = Craft::getAlias($volumePath).$folderPath.$asset->filename;
+
+        } else {
+
+            // If no public URL, bail
+            if (!$asset->url) {
+                $link->error = 'Cloud assets require a public URL.';
+                return;
+            }
+
+            // Set path for remote file
+            $assetFilePath = $asset->url;
+
+        }
+
+        // Start file download
+        $this->_downloadFile($asset, $assetFilePath);
     }
 
-    private function _getAssetFilePath($asset)
+    private function _downloadFile(Asset $asset, $filePath)
     {
-        $volumePath = $asset->getVolume()->settings['path'];
-        $folderPath = $asset->getFolder()->path.'/';
+        // Unlimited PHP memory
+        App::maxPowerCaptain();
 
-        return Craft::getAlias($volumePath).$folderPath.$asset->filename;
+        // Prevent timeouts
+        set_time_limit(0);
+
+        // Set file headers
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename='.$asset->filename);
+        header('Content-Length: '.$asset->size);
+
+        // Start with a clean slate
+        flush();
+
+        // Open the remote file
+        $file = fopen($filePath, 'rb');
+
+        // Read out the remote file in small chunks
+        $chunkSize = (1024 * 8);
+        while (!feof($file)) {
+
+            // One chunk at a time
+            echo fread($file, $chunkSize);
+
+            // Flush to prevent overflow
+            ob_flush();
+            flush();
+
+        }
+
+        // Close file
+        fclose($file);
+
+        // Finish up
+        ob_end_flush();
+        exit;
     }
 
     // ========================================================================
