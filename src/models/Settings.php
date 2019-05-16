@@ -20,10 +20,14 @@ use craft\base\Model;
 class Settings extends Model
 {
 
-    /** @var string  $shortPath  A short path for download URLs. */
+    /**
+     * @var string A short path for download URLs.
+     */
     public $shortPath = 'download';
 
-    /** @var bool  $keepDownloadLog  Whether to keep a detailed log of all downloads. */
+    /**
+     * @var bool Whether to keep a detailed log of all downloads.
+     */
     public $keepDownloadLog = false;
 
 }

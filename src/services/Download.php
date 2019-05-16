@@ -14,11 +14,18 @@ namespace doublesecretagency\digitaldownload\services;
 use Craft;
 use craft\base\Component;
 use craft\elements\Asset;
+use craft\elements\User;
 use craft\helpers\App;
+use craft\helpers\Json;
 use craft\volumes\Local;
+use DateTime;
+use DateTimeZone;
 use doublesecretagency\digitaldownload\DigitalDownload;
+use doublesecretagency\digitaldownload\models\Link;
 use doublesecretagency\digitaldownload\records\Log as LogRecord;
 use doublesecretagency\digitaldownload\records\Token as TokenRecord;
+use Exception;
+use yii\base\InvalidConfigException;
 use yii\web\HttpException;
 
 /**
@@ -28,18 +35,51 @@ use yii\web\HttpException;
 class Download extends Component
 {
 
-    private $_currentUserId;
-    private $_currentUserGroups;
+    /**
+     * @var User|null Currently logged-in user.
+     */
+    private $_user;
 
-    public function startDownload($token)
+    /**
+     * @var array User groups of currently logged-in user.
+     */
+    private $_userGroups = [];
+
+    /**
+     * Initiate file download.
+     *
+     * @param string|null $token Token representing file to be downloaded.
+     * @throws HttpException
+     * @throws InvalidConfigException
+     * @throws Exception
+     */
+    public function startDownload(string $token = null)
     {
-        // If no token, throw error message
+        // If no token provided, throw error message
         if (!$token) {
             throw new HttpException(403, 'No download token provided.');
         }
 
         // Get link data
         $link = DigitalDownload::$plugin->digitalDownload->getLinkData($token);
+
+        // If no link data exists, throw error message
+        if (!$link) {
+            throw new HttpException(403, 'No data is associated with this token.');
+        }
+
+        // Get currently logged-in user
+        $this->_user = Craft::$app->getUser()->getIdentity();
+
+        // If user is logged in
+        if ($this->_user) {
+
+            // Populate array of user groups
+            foreach ($this->_user->getGroups() as $group) {
+                $this->_userGroups[] = $group->handle;
+            }
+
+        }
 
         // Check if download is authorized
         $authorized = $this->authorized($link);
@@ -58,12 +98,16 @@ class Download extends Component
         }
 
         // Something went wrong, throw error message
-        $error = (string) $link->error;
-//      DigitalDownloadPlugin::log("Unable to download with token {$token}. {$error}", LogLevel::Warning);
-        throw new HttpException(403, $error);
+        throw new HttpException(403, (string) $link->error);
     }
 
-    public function trackDownload($link)
+    /**
+     * Track details of file download.
+     *
+     * @param Link $link Data regarding file download link.
+     * @throws Exception
+     */
+    public function trackDownload(Link $link)
     {
         // Get token record
         $tokenRecord = TokenRecord::findOne([
@@ -72,51 +116,41 @@ class Download extends Component
 
         // If no token record, bail
         if (!$tokenRecord) {
-            return false;
+            return;
         }
 
-        // Whether or not to log
-        $logging = DigitalDownload::$plugin->getSettings()->keepDownloadLog;
-
-        // Initialize log record
-        if ($logging) {
-            $currentUser = Craft::$app->user->getIdentity();
-            $log = new LogRecord();
-            $log->tokenId   = $tokenRecord->id;
-            $log->assetId   = $tokenRecord->assetId;
-            $log->userId    = ($currentUser ? $currentUser->id : null);
-            $log->ipAddress = $_SERVER['REMOTE_ADDR'];
-        }
-
-        // If no errors
+        // If no errors, increment token record
         if (!$link->error) {
-
-            // Increment token record
             $tokenRecord->totalDownloads++;
-            $tokenRecord->lastDownloaded = new \DateTime();
+            $tokenRecord->lastDownloaded = new DateTime();
             $tokenRecord->save();
-
-            // Log success
-            if ($logging) {
-                $log->success = true;
-                $log->save();
-            }
-
-        } else {
-
-            // Log failure
-            if ($logging) {
-                $log->success = false;
-                $log->error   = $link->error;
-                $log->save();
-            }
-
         }
+
+        // If not keeping a download log, bail
+        if (!DigitalDownload::$plugin->getSettings()->keepDownloadLog) {
+            return;
+        }
+
+        // Log download
+        $log = new LogRecord();
+        $log->tokenId   = $tokenRecord->id;
+        $log->assetId   = $tokenRecord->assetId;
+        $log->userId    = ($this->_user ? $this->_user->id : null);
+        $log->ipAddress = $_SERVER['REMOTE_ADDR'];
+        $log->success   = !$link->error;
+        $log->error     = $link->error;
+        $log->save();
     }
 
-    // ========================================================================
+    // =========================================================================
 
-    private function _outputFile($link)
+    /**
+     * Prepare to download file.
+     *
+     * @param Link $link Data regarding file download link.
+     * @throws InvalidConfigException
+     */
+    private function _outputFile(Link $link)
     {
         // Get asset of link
         $asset = $link->asset();
@@ -130,12 +164,15 @@ class Download extends Component
         // Determine volume type
         if (get_class($asset->getVolume()) == Local::class) {
 
-            // Get asset path info
-            $volumePath = $asset->getVolume()->settings['path'];
+            // Get volume path
+            $volumeSettings = $asset->getVolume()->getSettings();
+            $volumePath = Craft::getAlias($volumeSettings['path']);
+
+            // Get folder path
             $folderPath = $asset->getFolder()->path.'/';
 
             // Set path for local file
-            $assetFilePath = Craft::getAlias($volumePath).$folderPath.$asset->filename;
+            $assetFilePath = $volumePath.$folderPath.$asset->filename;
 
         } else {
 
@@ -154,7 +191,13 @@ class Download extends Component
         $this->_downloadFile($asset, $assetFilePath);
     }
 
-    private function _downloadFile(Asset $asset, $filePath)
+    /**
+     * Process the file download.
+     *
+     * @param Asset $asset The file to be downloaded.
+     * @param string $filePath Where the file is located.
+     */
+    private function _downloadFile(Asset $asset, string $filePath)
     {
         // Unlimited PHP memory
         App::maxPowerCaptain();
@@ -194,135 +237,187 @@ class Download extends Component
         exit;
     }
 
-    // ========================================================================
+    // =========================================================================
 
-    public function authorized($link)
+    /**
+     * Check whether file download is authorized.
+     *
+     * @param Link $link Data regarding file download link.
+     * @return bool
+     * @throws Exception
+     */
+    public function authorized(Link $link): bool
     {
+        // If link is not enabled, set error and bail
         if (!$this->_isEnabled($link)) {
             $link->error = 'Download link is disabled.';
             return false;
         }
+
+        // If link has expired, set error and bail
         if (!$this->_isUnexpired($link)) {
             $link->error = 'Download link has expired.';
             return false;
         }
+
+        // If max downloads have been reached, set error and bail
         if (!$this->_isUnderMaxDownloads($link)) {
             $link->error = 'Maximum downloads have been reached.';
             return false;
         }
+
+        // If user is not authorized, set error and bail
         if (!$this->_isAuthorizedUser($link)) {
             $link->error = 'User is not authorized to download file.';
             return false;
         }
+
         // Passed all checks
         return true;
     }
 
-    // Check whether link is enabled
-    private function _isEnabled($link)
+    /**
+     * Check whether link is enabled.
+     *
+     * @param Link $link Data regarding file download link.
+     * @return bool
+     */
+    private function _isEnabled(Link $link): bool
     {
         return $link->enabled;
     }
 
-    // Check whether link has not yet expired
-    private function _isUnexpired($link)
+    /**
+     * Check whether link has not yet expired.
+     *
+     * @param Link $link Data regarding file download link.
+     * @return bool
+     * @throws Exception
+     */
+    private function _isUnexpired(Link $link): bool
     {
-        // Current timestamp
-        $current = new \DateTime();
-        $now = (int) $current->format('U');
+        try {
 
-        // Expiration timestamp
-        $expires = new \DateTime($link->expires, new \DateTimeZone('UTC'));
-        $end = (int) $expires->format('U');
+            // Determine expiration timestamp
+            $expires = new DateTime($link->expires, new DateTimeZone('UTC'));
+            $end = (int) $expires->format('U');
+
+        } catch (Exception $e) {
+
+            // Assume link doesn't expire
+            return true;
+
+        }
+
+        // Determine current timestamp
+        $current = new DateTime();
+        $now = (int) $current->format('U');
 
         // Whether link has expired
         return ($now < $end);
     }
 
-    // Check whether link is under maximum downloads
-    private function _isUnderMaxDownloads($link)
+    /**
+     * Check whether link has reached the maximum number of permitted downloads.
+     *
+     * @param Link $link Data regarding file download link.
+     * @return bool
+     */
+    private function _isUnderMaxDownloads(Link $link): bool
     {
-        if ($link->maxDownloads) {
-            return ($link->totalDownloads < $link->maxDownloads);
+        // If no download maximum is set, return true
+        if (!$link->maxDownloads) {
+            return true;
         }
-        return true;
+
+        // Whether the total downloads has not yet reached the maximum
+        return ($link->totalDownloads < $link->maxDownloads);
     }
 
-    // ========================================================================
+    // =========================================================================
 
-    // Check whether user is authorized
-    private function _isAuthorizedUser($link)
+    /**
+     * Check whether user is authorized to download file.
+     *
+     * @param Link $link Data regarding file download link.
+     * @return bool
+     */
+    private function _isAuthorizedUser(Link $link): bool
     {
-        // Load current user info
-        $this->_loadUserData();
-
         // Decode user requirements
-        $requirement = json_decode($link->requireUser);
+        $requirement = Json::decode($link->requireUser);
 
         // All access granted (including anonymous)
         if (null === $requirement) {
             return true;
         }
-        // Must be logged in
+
+        // User must be logged in
         if ('*' === $requirement) {
-            return (bool) $this->_currentUserId;
+            return (bool) $this->_user->id;
         }
-        // Must be this user
+
+        // User ID must match specified ID
         if (is_numeric($requirement)) {
-            return $this->_isCurrentUser($requirement);
+            return $this->_isCurrentUser((int) $requirement);
         }
-        // Must be in this user group
+
+        // User must be a member of allowed group
         if (is_string($requirement)) {
             return $this->_isCurrentUserInGroup($requirement);
         }
+
         // Multiple users or groups
         if (is_array($requirement)) {
+
+            // Loop through each requirement
             foreach ($requirement as $userOrGroup) {
 
-                // Must be this user
-                if (is_numeric($userOrGroup)) {
-                    if ($this->_isCurrentUser($userOrGroup)) {
-                        return true;
-                    }
+                // User ID must match specified ID
+                if (is_numeric($userOrGroup) && $this->_isCurrentUser((int) $userOrGroup)) {
+                    return true;
+                }
 
-                    // Must be in this user group
-                } else if (is_string($userOrGroup)) {
-                    if ($this->_isCurrentUserInGroup($userOrGroup)) {
-                        return true;
-                    }
+                // User must be a member of allowed group
+                if (is_string($userOrGroup) && $this->_isCurrentUserInGroup($userOrGroup)) {
+                    return true;
                 }
 
             }
+
         }
 
-        // Failed the test
+        // Failed, user is not authorized
         return false;
 
     }
 
-    // Check whether user is current user
-    private function _isCurrentUser($userId)
+    /**
+     * Check whether the current user is allowed to download the file.
+     *
+     * @param int $userId An ID of a permitted user.
+     * @return bool
+     */
+    private function _isCurrentUser(int $userId): bool
     {
-        return ($this->_currentUserId == $userId);
-    }
-
-    // Check whether current user is in a group
-    private function _isCurrentUserInGroup($group)
-    {
-        return in_array($group, $this->_currentUserGroups);
-    }
-
-    // Load data for current user
-    private function _loadUserData()
-    {
-        $this->_currentUserGroups = [];
-        $user = Craft::$app->user->getIdentity();
-        if ($user && !$this->_currentUserId) {
-            $this->_currentUserId = $user->id;
-            foreach ($user->groups as $group) {
-                $this->_currentUserGroups[] = $group->handle;
-            }
+        // If there is no current user, return false
+        if (!$this->_user) {
+            return false;
         }
+
+        // Whether the specified ID matches the current user ID
+        return ($this->_user->id == $userId);
+    }
+
+    /**
+     * Check whether the current user is in a group allowed to download the file.
+     *
+     * @param string $group A permitted user group.
+     * @return bool
+     */
+    private function _isCurrentUserInGroup(string $group): bool
+    {
+        return in_array($group, $this->_userGroups, true);
     }
 
 }

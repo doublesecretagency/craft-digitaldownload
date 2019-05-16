@@ -11,38 +11,49 @@
 
 namespace doublesecretagency\digitaldownload;
 
-use yii\base\Event;
-
 use Craft;
 use craft\base\Plugin;
 use craft\events\RegisterUrlRulesEvent;
 use craft\web\UrlManager;
 use craft\web\twig\variables\CraftVariable;
-
 use doublesecretagency\digitaldownload\models\Settings;
 use doublesecretagency\digitaldownload\services\DigitalDownloadService;
 use doublesecretagency\digitaldownload\services\Download;
 use doublesecretagency\digitaldownload\services\Token;
 use doublesecretagency\digitaldownload\variables\DigitalDownloadVariable;
 use doublesecretagency\digitaldownload\web\assets\SettingsAssets;
+use Exception;
+use yii\base\Event;
 
 /**
  * Class DigitalDownload
  * @since 2.0.0
+ *
+ * @property DigitalDownloadService $digitalDownload
+ * @property Download               $digitalDownload_download
+ * @property Token                  $digitalDownload_token
  */
 class DigitalDownload extends Plugin
 {
 
-    /** @var Plugin  $plugin  Self-referential plugin property. */
+    /**
+     * @var DigitalDownload Self-referential plugin property.
+     */
     public static $plugin;
 
-    /** @var bool  $hasCpSettings  The plugin has a settings page. */
+    /**
+     * @inheritdoc
+     */
     public $hasCpSettings = true;
 
-    /** @var bool  $schemaVersion  Current schema version of the plugin. */
+    /**
+     * @inheritdoc
+     */
     public $schemaVersion = '2.0.0';
 
-    /** @inheritDoc */
+    /**
+     * @inheritDoc
+     */
     public function init()
     {
         parent::init();
@@ -59,7 +70,7 @@ class DigitalDownload extends Plugin
         Event::on(
             CraftVariable::class,
             CraftVariable::EVENT_INIT,
-            function (Event $event) {
+            static function (Event $event) {
                 $variable = $event->sender;
                 $variable->set('digitalDownload', DigitalDownloadVariable::class);
             }
@@ -75,6 +86,7 @@ class DigitalDownload extends Plugin
                 if ($shortPath) {
                     $downloadRoute = $shortPath.'/<token:[a-zA-Z0-9]+>';
                     $event->rules[$downloadRoute] = 'digital-download/download/short-path';
+                    $event->rules[$shortPath] = 'digital-download/download/short-path';
                 }
             }
         );
@@ -82,7 +94,7 @@ class DigitalDownload extends Plugin
     }
 
     /**
-     * @return Settings  Plugin settings model.
+     * @inheritDoc
      */
     protected function createSettingsModel()
     {
@@ -90,18 +102,23 @@ class DigitalDownload extends Plugin
     }
 
     /**
-     * @return string  The fully rendered settings template.
+     * @inheritDoc
+     * @throws Exception
      */
     protected function settingsHtml(): string
     {
-        $view = Craft::$app->getView();
-        $view->registerAssetBundle(SettingsAssets::class);
-        $overrideKeys = array_keys(Craft::$app->getConfig()->getConfigFromFile('digital-download'));
-        return $view->renderTemplate('digital-download/settings', [
-            'settings' => $this->getSettings(),
-            'overrideKeys' => $overrideKeys,
-            'docsUrl' => $this->documentationUrl,
-        ]);
+        try {
+            $view = Craft::$app->getView();
+            $view->registerAssetBundle(SettingsAssets::class);
+            $overrideKeys = array_keys(Craft::$app->getConfig()->getConfigFromFile('digital-download'));
+            return $view->renderTemplate('digital-download/settings', [
+                'settings' => $this->getSettings(),
+                'overrideKeys' => $overrideKeys,
+                'docsUrl' => $this->documentationUrl,
+            ]);
+        } catch (Exception $e) {
+            throw $e;
+        }
     }
 
 }

@@ -13,7 +13,6 @@ namespace doublesecretagency\digitaldownload\controllers;
 
 use Craft;
 use craft\web\Controller;
-
 use doublesecretagency\digitaldownload\DigitalDownload;
 
 /**
@@ -24,13 +23,13 @@ class DownloadController extends Controller
 {
 
     /**
-     * @var    bool|array Allows anonymous access to this controller's actions.
+     * @var    bool Allows anonymous access to this controller's actions.
      * @access protected
      */
     protected $allowAnonymous = true;
 
     /**
-     * Follow long path to download file
+     * Follow long path to download file.
      */
     public function actionIndex()
     {
@@ -41,7 +40,7 @@ class DownloadController extends Controller
     /**
      * Follow short path to download file.
      *
-     * @param array $variables
+     * @param string|null $token Token representing file to be downloaded.
      */
     public function actionShortPath(string $token = null)
     {
@@ -51,9 +50,9 @@ class DownloadController extends Controller
     /**
      * Initiate the download.
      *
-     * @param $token
+     * @param string|null $token Token representing file to be downloaded.
      */
-    private function _download($token)
+    private function _download(string $token = null)
     {
         DigitalDownload::$plugin->digitalDownload_download->startDownload($token);
     }

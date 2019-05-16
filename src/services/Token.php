@@ -11,12 +11,14 @@
 
 namespace doublesecretagency\digitaldownload\services;
 
-use Craft;
 use craft\base\Component;
 use craft\elements\Asset;
-
+use craft\helpers\Json;
+use DateInterval;
+use DateTime;
 use doublesecretagency\digitaldownload\DigitalDownload;
 use doublesecretagency\digitaldownload\records\Token as TokenRecord;
+use Exception;
 
 /**
  * Class Token
@@ -25,19 +27,27 @@ use doublesecretagency\digitaldownload\records\Token as TokenRecord;
 class Token extends Component
 {
 
-    public function createToken(Asset $file, $options = [])
+    /**
+     * Create a token for a file.
+     *
+     * @param Asset $file File to be represented by token.
+     * @param array $options Configuration of download token.
+     * @return string
+     * @throws Exception
+     */
+    public function createToken(Asset $file, array $options = []): string
     {
         // Generate token
         $token = DigitalDownload::$plugin->digitalDownload->hash();
 
         // Load options
-        $ttl          = $this->_setValue($options, 'expires',      'P14D');
-        $requireUser  = $this->_setValue($options, 'requireUser',  null  );
-        $maxDownloads = $this->_setValue($options, 'maxDownloads', 0     );
+        $ttl          = ($options['expires']      ?? 'P14D');
+        $requireUser  = ($options['requireUser']  ?? null);
+        $maxDownloads = ($options['maxDownloads'] ?? 0);
 
         // Set expiration date
-        $expires = new \DateTime();
-        $expires = $expires->add(new \DateInterval($ttl));
+        $expires = new DateTime();
+        $expires = $expires->add(new DateInterval($ttl));
 
         // Create new token record
         $linkRecord = new TokenRecord();
@@ -46,7 +56,7 @@ class Token extends Component
         $linkRecord->assetId      = $file->id;
         $linkRecord->token        = $token;
         $linkRecord->expires      = $expires;
-        $linkRecord->requireUser  = json_encode($requireUser);
+        $linkRecord->requireUser  = Json::encode($requireUser);
         $linkRecord->maxDownloads = $maxDownloads;
 
         // Save token record
@@ -54,14 +64,6 @@ class Token extends Component
 
         // Return token string
         return $token;
-    }
-
-    // ========================================================================= //
-
-    // Set option value (or default)
-    private function _setValue($options, $key, $default)
-    {
-        return (array_key_exists($key, $options) ? $options[$key] : $default);
     }
 
 }

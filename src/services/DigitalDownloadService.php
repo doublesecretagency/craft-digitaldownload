@@ -11,94 +11,134 @@
 
 namespace doublesecretagency\digitaldownload\services;
 
-use yii\db\Exception;
-
 use Craft;
 use craft\base\Component;
 use craft\elements\Asset;
 use craft\helpers\StringHelper;
 use craft\helpers\Template;
 use craft\helpers\UrlHelper;
-
 use doublesecretagency\digitaldownload\DigitalDownload;
 use doublesecretagency\digitaldownload\models\Link;
 use doublesecretagency\digitaldownload\records\Token as TokenRecord;
+use yii\base\Exception;
 
 /**
  * Class DigitalDownloadService
  * @since 2.0.0
+ *
+ * @property Token $digitalDownload_token
  */
 class DigitalDownloadService extends Component
 {
 
-    public $settings;
-
-    public function hash()
+    /**
+     * Generate a random string to be used as a token.
+     *
+     * @return string Randomly generated string.
+     */
+    public function hash(): string
     {
         return StringHelper::randomString();
     }
 
-    public function createToken(Asset $file, $options = [])
+    /**
+     * Create a token for a file.
+     *
+     * @param Asset $file File to be represented by token.
+     * @param array $options Configuration of download token.
+     * @return string
+     * @throws \Exception
+     */
+    public function createToken(Asset $file, array $options = []): string
     {
         return DigitalDownload::$plugin->digitalDownload_token->createToken($file, $options);
     }
 
-    // ========================================================================= //
+    // =========================================================================
 
-    // Generates a URL to download the file
-    public function url($token, $options = [])
+    /** @noinspection PhpDocMissingThrowsInspection */
+    /**
+     * Generates a URL to download the file.
+     *
+     * @param Asset|string $token Existing token, or file to be tokenized.
+     * @param array $options Configuration of download token.
+     * @return string
+     * @throws \Exception
+     */
+    public function url($token, array $options = []): string
     {
+        // Ensures we're working with a proper token
+        /** @noinspection CallableParameterUseCaseInTypeContextInspection */
         $token = $this->_tokenOrFile($token, $options);
-        // If token exists
-        if ($token) {
-            // Get short path
-            $shortPath = DigitalDownload::$plugin->getSettings()->shortPath;
-            $shortPath = trim($shortPath, ' /');
-            // If short path exists, use it
-            if ($shortPath) {
-                return UrlHelper::siteUrl($shortPath.'/'.$token);
-            }
-            // Use long path
-            return UrlHelper::actionUrl('digital-download/download', ['u' => $token]);
+
+        // If token does not exist
+        if (!$token) {
+            return '[invalid token]';
         }
-        // Output error message
-        return '[invalid token]';
+
+        // Get short path
+        $shortPath = DigitalDownload::$plugin->getSettings()->shortPath;
+        $shortPath = trim($shortPath, ' /');
+
+        // If short path exists, use it
+        if ($shortPath) {
+            /** @noinspection PhpUnhandledExceptionInspection */
+            return UrlHelper::siteUrl($shortPath.'/'.$token);
+        }
+
+        // Use long path
+        return UrlHelper::actionUrl('digital-download/download', ['u' => $token]);
     }
 
-    // Generates a full HTML <a> tag
-    public function link($token, $options = [], $label = 'Download')
+    /**
+     * Generates a full HTML <a> tag.
+     *
+     * @param Asset|string $token Existing token, or file to be tokenized.
+     * @param array $options Configuration of download token.
+     * @param string $label Optional label of download link.
+     * @return string
+     * @throws \Exception
+     */
+    public function link($token, array $options = [], $label = 'Download'): string
     {
-        // If options param is skipped
-        if (is_string($options)) {
-            $label = $options;
-            $options = [];
-        }
-        // Set URL
+        // Generate a URL to download the file
         $url = $this->url($token, $options);
-        // Return HTML
-        return Template::raw('<a href="'.$url.'">'.$label.'</a>');
+
+        // Return the HTML link
+        return Template::raw("<a href=\"{$url}\">{$label}</a>");
     }
 
-    // ========================================================================= //
+    // =========================================================================
 
-    public function getLinkData($token)
+    /**
+     * Get the link data from an existing token.
+     *
+     * @param string $token Existing token.
+     * @return Link|false
+     */
+    public function getLinkData(string $token): Link
     {
         // Get token record
         $tokenRecord = TokenRecord::findOne([
             'token' => $token
         ]);
+
+        // If no token record, bail
+        if (!$tokenRecord) {
+            return false;
+        }
+
         // Return link model
         return new Link($tokenRecord);
     }
 
-    public function cleanup()
-    {
-        $this->disableExpiredLinks();
-    }
-
+    /**
+     * Disable all tokens which have expired.
+     */
     public function disableExpiredLinks()
     {
         try {
+
             Craft::$app->getDb()->createCommand()
                 ->update(
                     '{{%digitaldownload_tokens}}',
@@ -110,23 +150,47 @@ class DigitalDownloadService extends Component
                     ]
                 )
                 ->execute();
+
         } catch (Exception $e) {
+
+            // Something went wrong, do nothing
+
         }
     }
 
-    // ========================================================================= //
+    /**
+     * Disable all tokens which have expired.
+     * Alias of `disableExpiredLinks()`.
+     *
+     * @see disableExpiredLinks()
+     */
+    public function cleanup()
+    {
+        $this->disableExpiredLinks();
+    }
 
-    // Ensures that we're working with a proper token
+    // =========================================================================
+
+    /**
+     * Ensures that we're working with a proper token
+     *
+     * @param Asset|string $token Existing token, or file to be tokenized.
+     * @param array $options Configuration of download token.
+     * @return string|false
+     * @throws \Exception
+     */
     private function _tokenOrFile($token, $options = [])
     {
         // If $token is a token, use the token
         if (is_string($token)) {
             return $token;
         }
+
         // If $token is an asset, create a token
-        if (is_a($token, 'craft\\elements\\Asset')) {
+        if (is_a($token, Asset::class)) {
             return $this->createToken($token, $options);
         }
+
         // $token is invalid
         return false;
     }

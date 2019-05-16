@@ -21,7 +21,7 @@ function updateDemoPath() {
     $('#settings-demo-path').html(demoPath);
 }
 
-// =================================================================== //
+// =========================================================================
 
 // Update path while typing
 $('#settings-shortPath').on('keyup', function() {

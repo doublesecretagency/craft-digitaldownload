@@ -12,8 +12,8 @@
 namespace doublesecretagency\digitaldownload\variables;
 
 use craft\elements\Asset;
-
 use doublesecretagency\digitaldownload\DigitalDownload;
+use doublesecretagency\digitaldownload\models\Link;
 
 /**
  * Class DigitalDownloadVariable
@@ -22,24 +22,57 @@ use doublesecretagency\digitaldownload\DigitalDownload;
 class DigitalDownloadVariable
 {
 
-    // Create a token for a file
-    public function createToken(Asset $file, $options = [])
+    /**
+     * Create a token for a file.
+     *
+     * @param Asset $file File to be represented by token.
+     * @param array $options Configuration of download token.
+     * @return string
+     */
+    public function createToken(Asset $file, $options = []): string
     {
         return DigitalDownload::$plugin->digitalDownload->createToken($file, $options);
     }
 
-    // ========================================================================
+    // =========================================================================
 
-    // Generates a URL to download the file
-    public function url($token, $options = [])
+    /**
+     * Generates a URL to download the file.
+     *
+     * @param Asset|string $token Existing token, or file to be tokenized.
+     * @param array $options Configuration of download token.
+     * @return string
+     */
+    public function url($token, array $options = []): string
     {
         return DigitalDownload::$plugin->digitalDownload->url($token, $options);
     }
 
-    // Generates a full HTML <a> tag
-    public function link($token, $options = [], $label = 'Download')
+
+    /**
+     * Generates a full HTML <a> tag.
+     *
+     * @param Asset|string $token Existing token, or file to be tokenized.
+     * @param array $options Configuration of download token.
+     * @param string $label Optional label of download link.
+     * @return string
+     */
+    public function link($token, array $options = [], string $label = 'Download'): string
     {
         return DigitalDownload::$plugin->digitalDownload->link($token, $options, $label);
+    }
+
+    // =========================================================================
+
+    /**
+     * Get the link data from an existing token.
+     *
+     * @param string $token Existing token.
+     * @return Link|false
+     */
+    public function getLinkData(string $token): Link
+    {
+        return DigitalDownload::$plugin->digitalDownload->getLinkData($token);
     }
 
 }

@@ -13,7 +13,8 @@ namespace doublesecretagency\digitaldownload\models;
 
 use Craft;
 use craft\base\Model;
-
+use craft\elements\Asset;
+use DateTime;
 use doublesecretagency\digitaldownload\DigitalDownload;
 
 /**
@@ -23,43 +24,69 @@ use doublesecretagency\digitaldownload\DigitalDownload;
 class Link extends Model
 {
 
-    /** @var int  $id  ID of link. */
+    /**
+     * @var int ID of link.
+     */
     public $id;
 
-    /** @var int  $assetId  ID of related asset. */
+    /**
+     * @var int ID of related asset.
+     */
     public $assetId;
 
-    /** @var string  $token  Unique download token. */
+    /**
+     * @var string Unique download token.
+     */
     public $token;
 
-    /** @var bool  $enabled  Whether token is enabled. */
+    /**
+     * @var bool Whether token is enabled.
+     */
     public $enabled;
 
-    /** @var \DateTime  $expires  Expiration date/time of download token. */
+    /**
+     * @var DateTime Expiration date/time of download token.
+     */
     public $expires;
 
-    /** @var string  $requireUser  Optionally require a user or group. */
+    /**
+     * @var string Optionally require a user or group.
+     */
     public $requireUser;
 
-    /** @var int  $maxDownloads  Maximum number of allowed downloads. */
+    /**
+     * @var int Maximum number of allowed downloads.
+     */
     public $maxDownloads;
 
-    /** @var int  $totalDownloads  Total number of times downloaded. */
+    /**
+     * @var int Total number of times downloaded.
+     */
     public $totalDownloads;
 
-    /** @var \DateTime  $lastDownloaded  Date/time of the most recent download. */
+    /**
+     * @var DateTime Date/time of the most recent download.
+     */
     public $lastDownloaded;
 
-    /** @var string  $error  Optional error message if download not permitted. */
+    /**
+     * @var string Optional error message if download not permitted.
+     */
     public $error;
 
-    /** @var \DateTime  $dateCreated  Date/time link was created. */
+    /**
+     * @var DateTime Date/time link was created.
+     */
     public $dateCreated;
 
-    /** @var \DateTime  $dateUpdated  Date/time link was updated. */
+    /**
+     * @var DateTime Date/time link was updated.
+     */
     public $dateUpdated;
 
-    /** @var string  $uid  Unique row ID. */
+    /**
+     * @var string Unique row ID.
+     */
     public $uid;
 
     /**
@@ -72,20 +99,34 @@ class Link extends Model
         return $this->token;
     }
 
-    // Get the related asset
+    /**
+     * Get the related asset.
+     *
+     * @return Asset|null
+     */
     public function asset()
     {
         return Craft::$app->assets->getAssetById($this->assetId);
     }
 
-    // Generates a URL to download the file
-    public function url($options = [])
+    /**
+     * Generates a URL to download the file.
+     *
+     * @param array $options Configuration of download token.
+     * @return string
+     */
+    public function url($options = []): string
     {
         return DigitalDownload::$plugin->digitalDownload->url($this->token, $options);
     }
 
-    // Generates a full HTML <a> tag
-    public function html($options = [])
+    /**
+     * Generates a full HTML <a> tag.
+     *
+     * @param array $options Configuration of download token.
+     * @return string
+     */
+    public function html($options = []): string
     {
         return DigitalDownload::$plugin->digitalDownload->link($this->token, $options);
     }
