@@ -94,13 +94,20 @@ class DigitalDownloadService extends Component
      * Generates a full HTML <a> tag.
      *
      * @param Asset|string $token Existing token, or file to be tokenized.
-     * @param array $options Configuration of download token.
+     * @param array|string $options Configuration of download token,
+     *                              or the link label if using an existing token.
      * @param string $label Optional label of download link.
      * @return string
      * @throws \Exception
      */
-    public function link($token, array $options = [], $label = 'Download'): string
+    public function link($token, $options = [], $label = 'Download')
     {
+        // If options param is skipped
+        if (is_string($options)) {
+            $label = $options;
+            $options = [];
+        }
+
         // Generate a URL to download the file
         $url = $this->url($token, $options);
 

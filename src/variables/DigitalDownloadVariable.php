@@ -48,16 +48,17 @@ class DigitalDownloadVariable
         return DigitalDownload::$plugin->digitalDownload->url($token, $options);
     }
 
-
     /**
      * Generates a full HTML <a> tag.
      *
      * @param Asset|string $token Existing token, or file to be tokenized.
-     * @param array $options Configuration of download token.
+     * @param array|string $options Configuration of download token,
+     *                              or the link label if using an existing token.
      * @param string $label Optional label of download link.
      * @return string
+     * @throws \Exception
      */
-    public function link($token, array $options = [], string $label = 'Download'): string
+    public function link($token, $options = [], string $label = 'Download')
     {
         return DigitalDownload::$plugin->digitalDownload->link($token, $options, $label);
     }
