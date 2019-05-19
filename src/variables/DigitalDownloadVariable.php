@@ -57,9 +57,13 @@ class DigitalDownloadVariable
      * @param string $label Optional label of download link.
      * @return string
      * @throws \Exception
+     * @deprecated in 2.1
      */
     public function link($token, $options = [], string $label = 'Download')
     {
+        // Deprecation
+        \Craft::$app->getDeprecator()->log('DigitalDownloadService::link', 'craft.digitalDownload.link() has been deprecated. Use craft.digitalDownload.url() to generate the URL, and compose the link manually instead.');
+
         return DigitalDownload::$plugin->digitalDownload->link($token, $options, $label);
     }
 

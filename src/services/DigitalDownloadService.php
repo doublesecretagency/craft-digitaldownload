@@ -99,9 +99,13 @@ class DigitalDownloadService extends Component
      * @param string $label Optional label of download link.
      * @return string
      * @throws \Exception
+     * @deprecated in 2.1
      */
     public function link($token, $options = [], $label = 'Download')
     {
+        // Deprecation
+        Craft::$app->getDeprecator()->log('DigitalDownloadService::link', 'DigitalDownloadService::link() has been deprecated. Use DigitalDownloadService::url() to generate the URL, and compose the link manually instead.');
+
         // If options param is skipped
         if (is_string($options)) {
             $label = $options;
