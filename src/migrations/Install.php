@@ -50,6 +50,7 @@ class Install extends Migration
             'id'             => $this->primaryKey(),
             'assetId'        => $this->integer()->notNull(),
             'token'          => $this->string(),
+            'headers'        => $this->text(),
             'enabled'        => $this->boolean()->defaultValue(true),
             'expires'        => $this->dateTime(),
             'requireUser'    => $this->string(),

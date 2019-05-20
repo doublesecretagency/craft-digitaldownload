@@ -23,6 +23,7 @@ use yii\db\ActiveQueryInterface;
  * @property int      $id
  * @property int      $assetId
  * @property string   $token
+ * @property string   $headers
  * @property int      $enabled
  * @property DateTime $expires
  * @property string   $requireUser

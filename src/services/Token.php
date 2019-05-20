@@ -44,6 +44,7 @@ class Token extends Component
         $ttl          = ($options['expires']      ?? 'P14D');
         $requireUser  = ($options['requireUser']  ?? null);
         $maxDownloads = ($options['maxDownloads'] ?? 0);
+        $headers      = ($options['headers']      ?? []);
 
         // Set expiration date
         $expires = new DateTime();
@@ -55,6 +56,7 @@ class Token extends Component
         // Configure token record
         $linkRecord->assetId      = $file->id;
         $linkRecord->token        = $token;
+        $linkRecord->headers      = Json::encode($headers, JSON_FORCE_OBJECT);
         $linkRecord->expires      = $expires;
         $linkRecord->requireUser  = Json::encode($requireUser);
         $linkRecord->maxDownloads = $maxDownloads;

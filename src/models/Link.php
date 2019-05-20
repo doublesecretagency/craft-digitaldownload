@@ -43,6 +43,11 @@ class Link extends Model
     public $token;
 
     /**
+     * @var string Optionally append or replace download headers.
+     */
+    public $headers;
+
+    /**
      * @var bool Whether token is enabled.
      */
     public $enabled;

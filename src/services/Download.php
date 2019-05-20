@@ -187,8 +187,11 @@ class Download extends Component
 
         }
 
+        // Set any optional download headers
+        $optionalHeaders = Json::decode($link->headers);
+
         // Start file download
-        $this->_downloadFile($asset, $assetFilePath);
+        $this->_downloadFile($asset, $assetFilePath, $optionalHeaders);
     }
 
     /**
@@ -196,8 +199,9 @@ class Download extends Component
      *
      * @param Asset $asset The file to be downloaded.
      * @param string $filePath Where the file is located.
+     * @param array $optionalHeaders Optional additional headers.
      */
-    private function _downloadFile(Asset $asset, string $filePath)
+    private function _downloadFile(Asset $asset, string $filePath, array $optionalHeaders = [])
     {
         // Unlimited PHP memory
         App::maxPowerCaptain();
@@ -205,10 +209,20 @@ class Download extends Component
         // Prevent timeouts
         set_time_limit(0);
 
+        // Default headers
+        $defaultHeaders = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename='.$asset->filename,
+            'Content-Length' => $asset->size,
+        ];
+
+        // Add optional headers
+        $headers = array_merge($defaultHeaders, $optionalHeaders);
+
         // Set file headers
-        header('Content-Type: application/octet-stream');
-        header('Content-Disposition: attachment; filename='.$asset->filename);
-        header('Content-Length: '.$asset->size);
+        foreach ($headers as $name => $value) {
+            header("{$name}: {$value}");
+        }
 
         // Start with a clean slate
         flush();
