@@ -11,9 +11,12 @@
 
 namespace doublesecretagency\digitaldownload\variables;
 
+use Craft;
 use craft\elements\Asset;
 use doublesecretagency\digitaldownload\DigitalDownload;
 use doublesecretagency\digitaldownload\models\Link;
+use Exception;
+use Twig\Markup;
 
 /**
  * Class DigitalDownloadVariable
@@ -28,6 +31,7 @@ class DigitalDownloadVariable
      * @param Asset $file File to be represented by token.
      * @param array $options Configuration of download token.
      * @return string
+     * @throws Exception
      */
     public function createToken(Asset $file, $options = []): string
     {
@@ -42,6 +46,7 @@ class DigitalDownloadVariable
      * @param Asset|string $token Existing token, or file to be tokenized.
      * @param array $options Configuration of download token.
      * @return string
+     * @throws Exception
      */
     public function url($token, array $options = []): string
     {
@@ -55,15 +60,16 @@ class DigitalDownloadVariable
      * @param array|string $options Configuration of download token,
      *                              or the link label if using an existing token.
      * @param string $label Optional label of download link.
-     * @return string
-     * @throws \Exception
+     * @return Markup
+     * @throws Exception
      * @deprecated in 2.1
      */
-    public function link($token, $options = [], string $label = 'Download')
+    public function link($token, $options = [], string $label = 'Download'): Markup
     {
         // Deprecation
-        \Craft::$app->getDeprecator()->log('DigitalDownloadService::link', 'craft.digitalDownload.link() has been deprecated. Use craft.digitalDownload.url() to generate the URL, and compose the link manually instead.');
+        Craft::$app->getDeprecator()->log('DigitalDownloadService::link', 'craft.digitalDownload.link() has been deprecated. Use craft.digitalDownload.url() to generate the URL, and compose the link manually instead.');
 
+        /** @noinspection PhpDeprecationInspection */
         return DigitalDownload::$plugin->digitalDownload->link($token, $options, $label);
     }
 

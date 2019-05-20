@@ -14,8 +14,11 @@ namespace doublesecretagency\digitaldownload\models;
 use Craft;
 use craft\base\Model;
 use craft\elements\Asset;
+use craft\helpers\Template;
 use DateTime;
 use doublesecretagency\digitaldownload\DigitalDownload;
+use Exception;
+use Twig\Markup;
 
 /**
  * Class Link
@@ -114,6 +117,7 @@ class Link extends Model
      *
      * @param array $options Configuration of download token.
      * @return string
+     * @throws Exception
      */
     public function url($options = []): string
     {
@@ -124,11 +128,17 @@ class Link extends Model
      * Generates a full HTML <a> tag.
      *
      * @param array $options Configuration of download token.
-     * @return string
+     * @param string $label Optional label of download link.
+     * @return Markup
+     * @throws Exception
      */
-    public function html($options = []): string
+    public function html($options = [], $label = 'Download'): Markup
     {
-        return DigitalDownload::$plugin->digitalDownload->link($this->token, $options);
+        // Generate a URL to download the file
+        $url = $this->url($options);
+
+        // Return the HTML link
+        return Template::raw("<a href=\"{$url}\">{$label}</a>");
     }
 
 }

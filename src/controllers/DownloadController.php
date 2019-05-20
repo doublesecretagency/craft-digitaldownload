@@ -14,6 +14,7 @@ namespace doublesecretagency\digitaldownload\controllers;
 use Craft;
 use craft\web\Controller;
 use doublesecretagency\digitaldownload\DigitalDownload;
+use Exception;
 
 /**
  * Class DownloadController
@@ -30,6 +31,7 @@ class DownloadController extends Controller
 
     /**
      * Follow long path to download file.
+     * @throws Exception
      */
     public function actionIndex()
     {
@@ -41,6 +43,7 @@ class DownloadController extends Controller
      * Follow short path to download file.
      *
      * @param string|null $token Token representing file to be downloaded.
+     * @throws Exception
      */
     public function actionShortPath(string $token = null)
     {
@@ -51,6 +54,7 @@ class DownloadController extends Controller
      * Initiate the download.
      *
      * @param string|null $token Token representing file to be downloaded.
+     * @throws Exception
      */
     private function _download(string $token = null)
     {

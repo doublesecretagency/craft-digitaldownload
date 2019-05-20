@@ -20,7 +20,8 @@ use craft\helpers\UrlHelper;
 use doublesecretagency\digitaldownload\DigitalDownload;
 use doublesecretagency\digitaldownload\models\Link;
 use doublesecretagency\digitaldownload\records\Token as TokenRecord;
-use yii\base\Exception;
+use Exception;
+use Twig\Markup;
 
 /**
  * Class DigitalDownloadService
@@ -47,7 +48,7 @@ class DigitalDownloadService extends Component
      * @param Asset $file File to be represented by token.
      * @param array $options Configuration of download token.
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function createToken(Asset $file, array $options = []): string
     {
@@ -56,14 +57,13 @@ class DigitalDownloadService extends Component
 
     // =========================================================================
 
-    /** @noinspection PhpDocMissingThrowsInspection */
     /**
      * Generates a URL to download the file.
      *
      * @param Asset|string $token Existing token, or file to be tokenized.
      * @param array $options Configuration of download token.
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function url($token, array $options = []): string
     {
@@ -97,11 +97,11 @@ class DigitalDownloadService extends Component
      * @param array|string $options Configuration of download token,
      *                              or the link label if using an existing token.
      * @param string $label Optional label of download link.
-     * @return string
-     * @throws \Exception
+     * @return Markup
+     * @throws Exception
      * @deprecated in 2.1
      */
-    public function link($token, $options = [], $label = 'Download')
+    public function link($token, $options = [], $label = 'Download'): Markup
     {
         // Deprecation
         Craft::$app->getDeprecator()->log('DigitalDownloadService::link', 'DigitalDownloadService::link() has been deprecated. Use DigitalDownloadService::url() to generate the URL, and compose the link manually instead.');
@@ -188,7 +188,7 @@ class DigitalDownloadService extends Component
      * @param Asset|string $token Existing token, or file to be tokenized.
      * @param array $options Configuration of download token.
      * @return string|false
-     * @throws \Exception
+     * @throws Exception
      */
     private function _tokenOrFile($token, $options = [])
     {
