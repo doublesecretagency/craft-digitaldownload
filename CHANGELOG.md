@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.1.0 - 2019-05-21
+
+### Added
+- Can now download files from volumes without public URLs.
+- Allows optional HTTP headers to be included at download.
+- Added `getLinkData` variable to see what a token represents.
+
+### Changed
+- Significantly improved performance for large file downloads.
+- Improved messages for invalid links.
+
+### Fixed
+- Fixed bug which allowed expiration timestamps to be slightly inaccurate.
+- Fixed uninstall bug.
+
 ## 2.0.0 - 2018-08-13
 
 ### Added
