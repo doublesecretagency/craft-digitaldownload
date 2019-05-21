@@ -35,8 +35,8 @@ class Install extends Migration
      */
     public function safeDown()
     {
-        $this->dropTableIfExists('{{%digitaldownload_tokens}}');
         $this->dropTableIfExists('{{%digitaldownload_log}}');
+        $this->dropTableIfExists('{{%digitaldownload_tokens}}');
     }
 
     /**
