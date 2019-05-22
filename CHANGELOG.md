@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.1 - 2019-05-21
+
+### Fixed
+- Removed unnecessary parameter in link methods.
+
 ## 2.1.0 - 2019-05-21
 
 ### Added
