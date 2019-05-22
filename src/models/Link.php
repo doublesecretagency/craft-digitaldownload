@@ -118,29 +118,28 @@ class Link extends Model
     }
 
     /**
-     * Generates a URL to download the file.
+     * Get the download URL of specified token.
      *
-     * @param array $options Configuration of download token.
+     * @param string $token Existing token.
      * @return string
      * @throws Exception
      */
-    public function url($options = []): string
+    public function url(): string
     {
-        return DigitalDownload::$plugin->digitalDownload->url($this->token, $options);
+        return DigitalDownload::$plugin->digitalDownload->url($this->token);
     }
 
     /**
      * Generates a full HTML <a> tag.
      *
-     * @param array $options Configuration of download token.
      * @param string $label Optional label of download link.
      * @return Markup
      * @throws Exception
      */
-    public function html($options = [], $label = 'Download'): Markup
+    public function html($label = 'Download'): Markup
     {
         // Generate a URL to download the file
-        $url = $this->url($options);
+        $url = $this->url();
 
         // Return the HTML link
         return Template::raw("<a href=\"{$url}\">{$label}</a>");
