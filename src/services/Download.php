@@ -182,8 +182,8 @@ class Download extends Component
                 return;
             }
 
-            // Set path for remote file
-            $assetFilePath = $asset->url;
+            // Set path for remote file (encode spaces)
+            $assetFilePath = preg_replace('/ /', '%20', $asset->url);
 
         }
 
@@ -212,7 +212,7 @@ class Download extends Component
         // Default headers
         $defaultHeaders = [
             'Content-Type' => 'application/octet-stream',
-            'Content-Disposition' => 'attachment; filename='.$asset->filename,
+            'Content-Disposition' => 'attachment; filename="'.$asset->filename.'"',
             'Content-Length' => $asset->size,
         ];
 
