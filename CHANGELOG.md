@@ -15,7 +15,7 @@
 ### Added
 - Can now download files from volumes without public URLs.
 - Allows optional HTTP headers to be included at download.
-- Added `getLinkData` variable to see what a token represents.
+- Added [`getLinkData`](https://www.doublesecretagency.com/plugins/digital-download/docs/get-link-data-from-a-token) variable to see what a token represents.
 
 ### Changed
 - Significantly improved performance for large file downloads.
