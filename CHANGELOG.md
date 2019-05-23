@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.2 - 2019-05-23
+
+### Fixed
+- Fixed bug which prevented downloading cloud assets that contained spaces in the filename.
+
 ## 2.1.1 - 2019-05-21
 
 ### Fixed
