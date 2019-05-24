@@ -164,15 +164,16 @@ class Download extends Component
         // Determine volume type
         if (get_class($asset->getVolume()) == Local::class) {
 
-            // Get volume path
+            // Get volume and folder paths
             $volumeSettings = $asset->getVolume()->getSettings();
-            $volumePath = Craft::getAlias($volumeSettings['path']);
-
-            // Get folder path
+            $volumePath = Craft::getAlias($volumeSettings['path']).'/';
             $folderPath = $asset->getFolder()->path.'/';
 
+            // Set local path (prevent double slashes)
+            $filepath = preg_replace('#/+#', '/', $volumePath.$folderPath);
+
             // Set path for local file
-            $assetFilePath = $volumePath.$folderPath.$asset->filename;
+            $assetFilePath = $filepath.$asset->filename;
 
         } else {
 
