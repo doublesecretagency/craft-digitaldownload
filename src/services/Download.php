@@ -149,6 +149,7 @@ class Download extends Component
      *
      * @param Link $link Data regarding file download link.
      * @throws InvalidConfigException
+     * @throws HttpException
      */
     private function _outputFile(Link $link)
     {
@@ -201,6 +202,7 @@ class Download extends Component
      * @param Asset $asset The file to be downloaded.
      * @param string $filePath Where the file is located.
      * @param array $optionalHeaders Optional additional headers.
+     * @throws HttpException
      */
     private function _downloadFile(Asset $asset, string $filePath, array $optionalHeaders = [])
     {
@@ -220,18 +222,23 @@ class Download extends Component
         // Add optional headers
         $headers = array_merge($defaultHeaders, $optionalHeaders);
 
+        // Start with a clean slate
+        flush();
+
+        // Open the file
+        $file = @fopen($filePath, 'rb');
+
+        // If file doesn't exist, throw an error
+        if (!$file) {
+            throw new HttpException(500, 'The file you are looking for does not exist.');
+        }
+
         // Set file headers
         foreach ($headers as $name => $value) {
             header("{$name}: {$value}");
         }
 
-        // Start with a clean slate
-        flush();
-
-        // Open the remote file
-        $file = fopen($filePath, 'rb');
-
-        // Read out the remote file in small chunks
+        // Read the file out in chunks
         $chunkSize = (1024 * 8);
         while (!feof($file)) {
 
