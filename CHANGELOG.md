@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.1.3 - 2019-05-24
+
+### Added
+- Added error message for a missing file, assuming token & asset are otherwise correct.
+
+### Fixed
+- Normalize local filepaths.
+
 ## 2.1.2 - 2019-05-23
 
 ### Fixed
