@@ -84,9 +84,6 @@ class Download extends Component
         // Check if download is authorized
         $authorized = $this->authorized($link);
 
-        // Track download attempt
-        $this->trackDownload($link);
-
         // If authorized, attempt file download
         if ($authorized) {
             $this->_outputFile($link);
@@ -96,6 +93,9 @@ class Download extends Component
         if (!$link->error) {
             $link->error = 'Unknown error when downloading file.';
         }
+
+        // Track failed download
+        $this->trackDownload($link);
 
         // Something went wrong, throw error message
         throw new HttpException(403, (string) $link->error);
@@ -150,6 +150,7 @@ class Download extends Component
      * @param Link $link Data regarding file download link.
      * @throws InvalidConfigException
      * @throws HttpException
+     * @throws Exception
      */
     private function _outputFile(Link $link)
     {
@@ -188,6 +189,9 @@ class Download extends Component
             $assetFilePath = preg_replace('/ /', '%20', $asset->url);
 
         }
+
+        // Track successful download
+        $this->trackDownload($link);
 
         // Set any optional download headers
         $optionalHeaders = Json::decode($link->headers);

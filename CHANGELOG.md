@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.4 - 2019-09-16
+
+### Changed
+- Improved timing of download tracking mechanism.
+
 ## 2.1.3 - 2019-05-24
 
 ### Added
