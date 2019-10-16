@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.5 - 2019-10-16
+
+### Fixed
+- Fixed a bug where `flush` may trigger an error.
+
 ## 2.1.4 - 2019-09-16
 
 ### Changed
