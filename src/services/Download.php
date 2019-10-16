@@ -242,11 +242,11 @@ class Download extends Component
             header("{$name}: {$value}");
         }
 
-        // Read the file out in chunks
+        // Size of chunks
         $chunkSize = (1024 * 8);
-        while (!feof($file)) {
 
-            // One chunk at a time
+        // Read the file out one chunk at a time
+        while (!feof($file)) {
             echo fread($file, $chunkSize);
 
             // Flush to prevent overflow
@@ -255,11 +255,11 @@ class Download extends Component
 
         }
 
-        // Close file
-        fclose($file);
-
         // Finish up
         ob_end_flush();
+
+        // Close file
+        fclose($file);
         exit;
     }
 
