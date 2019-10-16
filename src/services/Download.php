@@ -227,7 +227,7 @@ class Download extends Component
         $headers = array_merge($defaultHeaders, $optionalHeaders);
 
         // Start with a clean slate
-        flush();
+        ob_start();
 
         // Open the file
         $file = @fopen($filePath, 'rb');
