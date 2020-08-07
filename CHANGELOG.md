@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.6 - 2020-08-07
+
+### Changed
+- Redirect anonymous downloads to login page when a user is required, instead of just showing an error message.
+
 ## 2.1.5 - 2019-10-16
 
 ### Fixed
