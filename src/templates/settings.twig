@@ -8,14 +8,23 @@
         })|raw }}
     </p>
 {%- endmacro %}
-
 {% from _self import configWarning %}
+
+{% css %}
+    #content code {
+        color: #476582;
+        padding: .25rem .5rem;
+        margin: 0;
+        font-size: .85em;
+        background-color: rgba(27,31,35,.05);
+        background: rgba(0,72.85714285714286,127.5,.054901960784314);
+        border-radius: 3px;
+    }
+{% endcss %}
 
 {% set longPath = 'index.php/' ~ craft.app.config.general.actionTrigger ~ '/digitalDownload/download?u=' %}
 
-{% js %}
-    var longPath = '{{ longPath }}';
-{% endjs %}
+{% js "var longPath = '#{longPath}';" %}
 
 <h2>{{ "Short Download Links"|t('digital-download') }}</h2>
 
@@ -37,7 +46,7 @@
 <h2>Complete Download Log</h2>
 
 {{ forms.checkbox({
-    label: "<strong>Keep a detailed record of all downloads</strong>"|t('digital-download'),
+    label: raw("<strong>Keep a detailed record of all downloads</strong>"|t('digital-download')),
     id: 'keepDownloadLog',
     name: 'keepDownloadLog',
     checked: settings.keepDownloadLog,
@@ -46,6 +55,6 @@
 {{ 'keepDownloadLog' in overrideKeys ? configWarning('keepDownloadLog') }}
 <p>Generally unnecessary... The detailed log is not used to handle basic tracking.</p>
 <ul>
-    <li><strong>PRO:</strong> You have a detailed log of every download, which can then be accessed by another plugin via the <code>doublesecretagency\digitaldownload\records\Log</code> class.</li>
+    <li><strong>PRO:</strong> You have a detailed log of every download, which can then be accessed by another plugin or module via the <code>doublesecretagency\digitaldownload\records\Log</code> class.</li>
     <li><strong>CON:</strong> Any time Craft needs to create a backup database, it could take a very long time (depending on how big the log table gets).</li>
 </ul>
