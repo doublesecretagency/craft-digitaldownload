@@ -168,7 +168,7 @@ class Download extends Component
 
             // Get volume and folder paths
             $volumeSettings = $asset->getVolume()->getSettings();
-            $volumePath = Craft::getAlias($volumeSettings['path']).'/';
+            $volumePath = Craft::parseEnv($volumeSettings['path']).'/';
             $folderPath = $asset->getFolder()->path.'/';
 
             // Set local path (prevent double slashes)
