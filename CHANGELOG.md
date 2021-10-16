@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.1.8 - 2021-10-15
 
 ### Changed
 - Parse environment variables in Volume paths. (thanks @Peter-The-Great)
