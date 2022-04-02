@@ -19,6 +19,7 @@ use craft\helpers\Template;
 use craft\helpers\UrlHelper;
 use doublesecretagency\digitaldownload\DigitalDownload;
 use doublesecretagency\digitaldownload\models\Link;
+use doublesecretagency\digitaldownload\models\Settings;
 use doublesecretagency\digitaldownload\records\Token as TokenRecord;
 use Exception;
 use Twig\Markup;
@@ -65,7 +66,7 @@ class DigitalDownloadService extends Component
      * @return string
      * @throws Exception
      */
-    public function url($token, array $options = []): string
+    public function url(Asset|string $token, array $options = []): string
     {
         // Ensures we're working with a proper token
         /** @noinspection CallableParameterUseCaseInTypeContextInspection */
@@ -76,9 +77,11 @@ class DigitalDownloadService extends Component
             return '[invalid token]';
         }
 
+        /** @var Settings $settings */
+        $settings = DigitalDownload::$plugin->getSettings();
+
         // Get short path
-        $shortPath = DigitalDownload::$plugin->getSettings()->shortPath;
-        $shortPath = trim($shortPath, ' /');
+        $shortPath = trim($settings->shortPath, ' /');
 
         // If short path exists, use it
         if ($shortPath) {
@@ -99,9 +102,9 @@ class DigitalDownloadService extends Component
      * @param string $label Optional label of download link.
      * @return Markup
      * @throws Exception
-     * @deprecated in 2.1
+     * @deprecated in 2.1.0. Use [[url()]] to generate the URL, and compose the link manually instead.
      */
-    public function link($token, $options = [], $label = 'Download'): Markup
+    public function link(Asset|string $token, array|string $options = [], string $label = 'Download'): Markup
     {
         // Deprecation
         Craft::$app->getDeprecator()->log('DigitalDownloadService::link', 'DigitalDownloadService::link() has been deprecated. Use DigitalDownloadService::url() to generate the URL, and compose the link manually instead.');
@@ -125,9 +128,9 @@ class DigitalDownloadService extends Component
      * Get the link data from an existing token.
      *
      * @param string $token Existing token.
-     * @return Link|false
+     * @return Link|null
      */
-    public function getLinkData(string $token): Link
+    public function getLinkData(string $token): ?Link
     {
         // Get token record
         $tokenRecord = TokenRecord::findOne([
@@ -136,17 +139,17 @@ class DigitalDownloadService extends Component
 
         // If no token record, bail
         if (!$tokenRecord) {
-            return false;
+            return null;
         }
 
         // Return link model
-        return new Link($tokenRecord);
+        return new Link($tokenRecord->getAttributes());
     }
 
     /**
      * Disable all tokens which have expired.
      */
-    public function disableExpiredLinks()
+    public function disableExpiredLinks(): void
     {
         try {
 
@@ -175,7 +178,7 @@ class DigitalDownloadService extends Component
      *
      * @see disableExpiredLinks()
      */
-    public function cleanup()
+    public function cleanup(): void
     {
         $this->disableExpiredLinks();
     }
@@ -187,10 +190,10 @@ class DigitalDownloadService extends Component
      *
      * @param Asset|string $token Existing token, or file to be tokenized.
      * @param array $options Configuration of download token.
-     * @return string|false
+     * @return string|null
      * @throws Exception
      */
-    private function _tokenOrFile($token, $options = [])
+    private function _tokenOrFile(Asset|string $token, array $options = []): ?string
     {
         // If $token is a token, use the token
         if (is_string($token)) {
@@ -203,7 +206,7 @@ class DigitalDownloadService extends Component
         }
 
         // $token is invalid
-        return false;
+        return null;
     }
 
 }

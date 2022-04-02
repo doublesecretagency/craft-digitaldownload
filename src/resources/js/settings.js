@@ -1,7 +1,11 @@
+// Path elements
+const $shortPath = $('#settings-shortPath');
+const $demoPath  = $('#settings-demoPath');
+
 // Automatically update path as it is changed
 function updateDemoPath() {
     // Get current value
-    var demoPath = $('#settings-shortPath').val();
+    var demoPath = $shortPath.val();
     // Safety net
     if (undefined === demoPath) {
         demoPath = '';
@@ -18,13 +22,13 @@ function updateDemoPath() {
         demoPath = longPath;
     }
     // Display path
-    $('#settings-demo-path').html(demoPath);
+    $demoPath.html(demoPath);
 }
 
 // =========================================================================
 
 // Update path while typing
-$('#settings-shortPath').on('keyup', function() {
+$shortPath.on('keyup', function() {
     updateDemoPath();
 }).focus();
 

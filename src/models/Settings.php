@@ -23,11 +23,11 @@ class Settings extends Model
     /**
      * @var string A short path for download URLs.
      */
-    public $shortPath = 'download';
+    public string $shortPath = 'download';
 
     /**
      * @var bool Whether to keep a detailed log of all downloads.
      */
-    public $keepDownloadLog = false;
+    public bool $keepDownloadLog = false;
 
 }

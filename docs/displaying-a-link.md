@@ -17,21 +17,21 @@ If you are generating a token separately, you can use it like this:
 ### url(token)
 
 ```twig
-{% set token = craft.digitalDownload.createToken(file, options) %}
+{% set token = craft.digitalDownload.createToken(asset, options) %}
 
-<a href="{{ craft.digitalDownload.url(token) }}">{{ file.title }}</a>
+<a href="{{ craft.digitalDownload.url(token) }}">{{ asset.title }}</a>
 ```
 
 <hr style="margin:25px 0 18px">
 
-When you bypass manual token creation, you can pass the AssetFileModel directly into the **url** or **link** methods. In these cases, you can also provide an [array of options](/creating-a-token/#createtoken-file-options), which govern how and when the file can be accessed.
+When you bypass manual token creation, you can pass the Asset directly into the **url** or **link** methods. In these cases, you can also provide an [array of options](/creating-a-token/#createtoken-asset-options), which govern how and when the file can be accessed.
 
 ## Automatic Token Generation
 
 If you are not generating a token separately, you can use it like this:
 
-### url(file, options = [])
+### url(asset, options = [])
 
 ```twig
-<a href="{{ craft.digitalDownload.url(file, options) }}">{{ file.title }}</a>
+<a href="{{ craft.digitalDownload.url(asset, options) }}">{{ asset.title }}</a>
 ```

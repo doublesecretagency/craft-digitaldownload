@@ -23,7 +23,7 @@ class Install extends Migration
     /**
      * @inheritdoc
      */
-    public function safeUp()
+    public function safeUp(): void
     {
         $this->createTables();
         $this->createIndexes();
@@ -33,7 +33,7 @@ class Install extends Migration
     /**
      * @inheritdoc
      */
-    public function safeDown()
+    public function safeDown(): void
     {
         $this->dropTableIfExists('{{%digitaldownload_log}}');
         $this->dropTableIfExists('{{%digitaldownload_tokens}}');
@@ -41,10 +41,8 @@ class Install extends Migration
 
     /**
      * Creates the tables.
-     *
-     * @return void
      */
-    protected function createTables()
+    protected function createTables(): void
     {
         $this->createTable('{{%digitaldownload_tokens}}', [
             'id'             => $this->primaryKey(),
@@ -77,20 +75,16 @@ class Install extends Migration
 
     /**
      * Creates the indexes.
-     *
-     * @return void
      */
-    protected function createIndexes()
+    protected function createIndexes(): void
     {
         $this->createIndex(null, '{{%digitaldownload_tokens}}', ['token'], true);
     }
 
     /**
      * Adds the foreign keys.
-     *
-     * @return void
      */
-    protected function addForeignKeys()
+    protected function addForeignKeys(): void
     {
         $this->addForeignKey(null, '{{%digitaldownload_tokens}}', ['assetId'], '{{%assets}}', ['id'], 'CASCADE');
         $this->addForeignKey(null, '{{%digitaldownload_log}}', ['assetId'], '{{%assets}}', ['id'], 'SET NULL');

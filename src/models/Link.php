@@ -30,72 +30,72 @@ class Link extends Model
     /**
      * @var int ID of link.
      */
-    public $id;
+    public int $id;
 
     /**
      * @var int ID of related asset.
      */
-    public $assetId;
+    public int $assetId;
 
     /**
      * @var string Unique download token.
      */
-    public $token;
+    public string $token;
 
     /**
      * @var string Optionally append or replace download headers.
      */
-    public $headers;
+    public string $headers;
 
     /**
      * @var bool Whether token is enabled.
      */
-    public $enabled;
+    public bool $enabled;
 
     /**
      * @var DateTime Expiration date/time of download token.
      */
-    public $expires;
+    public DateTime $expires;
 
     /**
      * @var string Optionally require a user or group.
      */
-    public $requireUser;
+    public string $requireUser;
 
     /**
      * @var int Maximum number of allowed downloads.
      */
-    public $maxDownloads;
+    public int $maxDownloads;
 
     /**
      * @var int Total number of times downloaded.
      */
-    public $totalDownloads;
+    public int $totalDownloads;
 
     /**
-     * @var DateTime Date/time of the most recent download.
+     * @var DateTime|null Date/time of the most recent download.
      */
-    public $lastDownloaded;
+    public ?DateTime $lastDownloaded = null;
 
     /**
-     * @var string Optional error message if download not permitted.
+     * @var string|null Optional error message if download not permitted.
      */
-    public $error;
+    public ?string $error = null;
 
     /**
      * @var DateTime Date/time link was created.
      */
-    public $dateCreated;
+    public DateTime $dateCreated;
 
     /**
      * @var DateTime Date/time link was updated.
      */
-    public $dateUpdated;
+    public DateTime $dateUpdated;
 
     /**
      * @var string Unique row ID.
      */
-    public $uid;
+    public string $uid;
 
     /**
      * Use the link's token as the string representation.
@@ -112,15 +112,14 @@ class Link extends Model
      *
      * @return Asset|null
      */
-    public function asset()
+    public function asset(): ?Asset
     {
-        return Craft::$app->assets->getAssetById($this->assetId);
+        return Craft::$app->getAssets()->getAssetById($this->assetId);
     }
 
     /**
      * Get the download URL of specified token.
      *
-     * @param string $token Existing token.
      * @return string
      * @throws Exception
      */
@@ -136,7 +135,7 @@ class Link extends Model
      * @return Markup
      * @throws Exception
      */
-    public function html($label = 'Download'): Markup
+    public function html(string $label = 'Download'): Markup
     {
         // Generate a URL to download the file
         $url = $this->url();

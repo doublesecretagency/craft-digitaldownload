@@ -13,11 +13,13 @@ namespace doublesecretagency\digitaldownload\services;
 
 use Craft;
 use craft\base\Component;
+use craft\base\FsInterface;
 use craft\elements\Asset;
 use craft\elements\User;
+use craft\fs\Local;
 use craft\helpers\App;
 use craft\helpers\Json;
-use craft\volumes\Local;
+use craft\models\Volume;
 use DateTime;
 use DateTimeZone;
 use doublesecretagency\digitaldownload\DigitalDownload;
@@ -38,12 +40,12 @@ class Download extends Component
     /**
      * @var User|null Currently logged-in user.
      */
-    private $_user;
+    private ?User $_user;
 
     /**
      * @var array User groups of currently logged-in user.
      */
-    private $_userGroups = [];
+    private array $_userGroups = [];
 
     /**
      * Initiate file download.
@@ -51,9 +53,8 @@ class Download extends Component
      * @param string|null $token Token representing file to be downloaded.
      * @throws HttpException
      * @throws InvalidConfigException
-     * @throws Exception
      */
-    public function startDownload(string $token = null)
+    public function startDownload(?string $token = null): void
     {
         // If no token provided, throw error message
         if (!$token) {
@@ -98,7 +99,7 @@ class Download extends Component
         $this->trackDownload($link);
 
         // Something went wrong, throw error message
-        throw new HttpException(403, (string) $link->error);
+        throw new HttpException(403, $link->error);
     }
 
     /**
@@ -107,7 +108,7 @@ class Download extends Component
      * @param Link $link Data regarding file download link.
      * @throws Exception
      */
-    public function trackDownload(Link $link)
+    public function trackDownload(Link $link): void
     {
         // Get token record
         $tokenRecord = TokenRecord::findOne([
@@ -148,11 +149,10 @@ class Download extends Component
      * Prepare to download file.
      *
      * @param Link $link Data regarding file download link.
-     * @throws InvalidConfigException
      * @throws HttpException
-     * @throws Exception
+     * @throws InvalidConfigException
      */
-    private function _outputFile(Link $link)
+    private function _outputFile(Link $link): void
     {
         // Get asset of link
         $asset = $link->asset();
@@ -163,16 +163,22 @@ class Download extends Component
             return;
         }
 
+        /** @var Volume $volume */
+        $volume = $asset->getVolume();
+
+        /** @var FsInterface $filesystem */
+        $filesystem = $volume->getFs();
+
         // Determine volume type
-        if (get_class($asset->getVolume()) == Local::class) {
+        if (get_class($filesystem) === Local::class) {
 
             // Get volume and folder paths
-            $volumeSettings = $asset->getVolume()->getSettings();
-            $volumePath = Craft::parseEnv($volumeSettings['path']).'/';
+            $fsSettings = $filesystem->getSettings();
+            $fsPath = App::parseEnv($fsSettings['path']).'/';
             $folderPath = $asset->getFolder()->path.'/';
 
             // Set local path (prevent double slashes)
-            $filepath = preg_replace('#/+#', '/', $volumePath.$folderPath);
+            $filepath = preg_replace('#/+#', '/', $fsPath.$folderPath);
 
             // Set path for local file
             $assetFilePath = $filepath.$asset->filename;
@@ -208,7 +214,7 @@ class Download extends Component
      * @param array $optionalHeaders Optional additional headers.
      * @throws HttpException
      */
-    private function _downloadFile(Asset $asset, string $filePath, array $optionalHeaders = [])
+    private function _downloadFile(Asset $asset, string $filePath, array $optionalHeaders = []): void
     {
         // Unlimited PHP memory
         App::maxPowerCaptain();
@@ -332,16 +338,12 @@ class Download extends Component
     private function _isUnexpired(Link $link): bool
     {
         try {
-
             // Determine expiration timestamp
-            $expires = new DateTime($link->expires, new DateTimeZone('UTC'));
+            $expires = $link->expires->setTimezone(new DateTimeZone('UTC'));
             $end = (int) $expires->format('U');
-
         } catch (Exception $e) {
-
             // Assume link doesn't expire
             return true;
-
         }
 
         // Determine current timestamp
@@ -424,7 +426,6 @@ class Download extends Component
 
         // Failed, user is not authorized
         return false;
-
     }
 
     /**

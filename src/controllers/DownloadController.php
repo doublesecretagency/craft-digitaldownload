@@ -14,7 +14,8 @@ namespace doublesecretagency\digitaldownload\controllers;
 use Craft;
 use craft\web\Controller;
 use doublesecretagency\digitaldownload\DigitalDownload;
-use Exception;
+use yii\base\InvalidConfigException;
+use yii\web\HttpException;
 
 /**
  * Class DownloadController
@@ -24,16 +25,17 @@ class DownloadController extends Controller
 {
 
     /**
-     * @var    bool Allows anonymous access to this controller's actions.
-     * @access protected
+     * @inheritdoc
      */
-    protected $allowAnonymous = true;
+    protected array|bool|int $allowAnonymous = true;
 
     /**
      * Follow long path to download file.
-     * @throws Exception
+     *
+     * @throws HttpException
+     * @throws InvalidConfigException
      */
-    public function actionIndex()
+    public function actionIndex(): void
     {
         $token = Craft::$app->getRequest()->getQueryParam('u');
         $this->_download($token);
@@ -43,9 +45,10 @@ class DownloadController extends Controller
      * Follow short path to download file.
      *
      * @param string|null $token Token representing file to be downloaded.
-     * @throws Exception
+     * @throws HttpException
+     * @throws InvalidConfigException
      */
-    public function actionShortPath(string $token = null)
+    public function actionShortPath(?string $token = null): void
     {
         $this->_download($token);
     }
@@ -54,9 +57,10 @@ class DownloadController extends Controller
      * Initiate the download.
      *
      * @param string|null $token Token representing file to be downloaded.
-     * @throws Exception
+     * @throws HttpException
+     * @throws InvalidConfigException
      */
-    private function _download(string $token = null)
+    private function _download(?string $token = null): void
     {
         DigitalDownload::$plugin->digitalDownload_download->startDownload($token);
     }

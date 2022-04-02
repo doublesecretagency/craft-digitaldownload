@@ -25,7 +25,7 @@ class m190519_000000_digitalDownload_addHeadersColumn extends Migration
      * @inheritdoc
      * @throws NotSupportedException
      */
-    public function safeUp()
+    public function safeUp(): void
     {
         $table = '{{%digitaldownload_tokens}}';
         if (!$this->db->columnExists($table, 'headers')) {

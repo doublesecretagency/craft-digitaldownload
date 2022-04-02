@@ -12,6 +12,7 @@
 namespace doublesecretagency\digitaldownload;
 
 use Craft;
+use craft\base\Model;
 use craft\base\Plugin;
 use craft\events\RegisterUrlRulesEvent;
 use craft\web\UrlManager;
@@ -30,8 +31,8 @@ use yii\base\Event;
  * @since 2.0.0
  *
  * @property DigitalDownloadService $digitalDownload
- * @property Download               $digitalDownload_download
- * @property Token                  $digitalDownload_token
+ * @property Download $digitalDownload_download
+ * @property Token $digitalDownload_token
  */
 class DigitalDownload extends Plugin
 {
@@ -39,31 +40,31 @@ class DigitalDownload extends Plugin
     /**
      * @var DigitalDownload Self-referential plugin property.
      */
-    public static $plugin;
+    public static DigitalDownload $plugin;
 
     /**
      * @inheritdoc
      */
-    public $hasCpSettings = true;
+    public bool $hasCpSettings = true;
 
     /**
      * @inheritdoc
      */
-    public $schemaVersion = '2.1.0';
+    public string $schemaVersion = '2.1.0';
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         self::$plugin = $this;
 
         // Load plugin components
         $this->setComponents([
-            'digitalDownload'          => DigitalDownloadService::class,
+            'digitalDownload' => DigitalDownloadService::class,
             'digitalDownload_download' => Download::class,
-            'digitalDownload_token'    => Token::class,
+            'digitalDownload_token' => Token::class,
         ]);
 
         // Register variables
@@ -81,7 +82,7 @@ class DigitalDownload extends Plugin
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
             function (RegisterUrlRulesEvent $event) {
-                $shortPath = $this->getSettings()->shortPath;
+                $shortPath = ($this->getSettings()->shortPath ?? 'download');
                 $shortPath = trim($shortPath, ' /');
                 if ($shortPath) {
                     $downloadRoute = $shortPath.'/<token:[a-zA-Z0-9]+>';
@@ -94,18 +95,17 @@ class DigitalDownload extends Plugin
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    protected function createSettingsModel()
+    protected function createSettingsModel(): ?Model
     {
         return new Settings();
     }
 
     /**
-     * @inheritDoc
-     * @throws Exception
+     * @inheritdoc
      */
-    protected function settingsHtml(): string
+    protected function settingsHtml(): ?string
     {
         try {
             $view = Craft::$app->getView();

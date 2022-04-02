@@ -9,13 +9,13 @@ The best way to store a token for later use is to generate it using the [Prepars
 When creating a Preparse field, use something like this in the field configuration:
 
 ```twig
-{%- spaceless -%}
+{%- apply spaceless -%}
     {% set myAsset = entry.myAsset.one() %}
     {% if myAsset %}
         {# Existing token, or generate new token #}
         {{ entry.myToken ?: craft.digitalDownload.createToken(myAsset) }}
     {% endif %}
-{%- endspaceless -%}
+{%- endapply -%}
 ```
 
 For the purpose of the example above:

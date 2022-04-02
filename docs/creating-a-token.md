@@ -14,16 +14,16 @@ Here's how to manually generate a token for your downloadable file...
 
 :::code
 ```twig
-{% set token = craft.digitalDownload.createToken(file, options) %}
+{% set token = craft.digitalDownload.createToken(asset, options) %}
 ```
 ```php
-$token = DigitalDownload::$plugin->digitalDownload->createToken($file, $options);
+$token = DigitalDownload::$plugin->digitalDownload->createToken($asset, $options);
 ```
 :::
 
-## createToken(file, options = [])
+## createToken(asset, options = [])
 
- - **file** - An AssetFileModel of the downloadable file.
+ - **asset** - The downloadable Asset.
  - **options** - A key-value set of options.
 
 | Option       | Default  | Description
