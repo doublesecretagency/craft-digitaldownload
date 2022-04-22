@@ -13,7 +13,7 @@
 In its most basic form, you can generate a file download link with just a single line of code...
 
 ```twig
-{{ craft.digitalDownload.link(file) }}
+{{ craft.digitalDownload.link(asset) }}
 ```
 
 See the full docs on how to [display a link...](https://plugins.doublesecretagency.com/digital-download/displaying-a-link/)
@@ -23,14 +23,14 @@ See the full docs on how to [display a link...](https://plugins.doublesecretagen
 A token can be generated to denote a _specific_ file download with _specific_ expiration parameters. It's common practice to create a token, then store it for later use.
 
 ```twig
-{% set token = craft.digitalDownload.createToken(file, options) %}
+{% set token = craft.digitalDownload.createToken(asset, options) %}
 ```
 
 Learn which options are available when [creating a token...](https://plugins.doublesecretagency.com/digital-download/creating-a-token/)
 
 ## Store a Token
 
-Here's a trick for automatically generating tokens. It uses the magic of a [Preparse field](https://github.com/aelvan/Preparse-Field-Craft) to store a persistent token in your Entry.
+Here's a trick for automatically generating tokens. It uses the magic of a [Preparse field](https://plugins.craftcms.com/preparse-field) to store a persistent token in your Entry.
 
 See how to [use this with your entries...](https://plugins.doublesecretagency.com/digital-download/storing-a-token/)
 
