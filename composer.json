@@ -2,7 +2,7 @@
     "name": "doublesecretagency/craft-digitaldownload",
     "description": "Provide secure digital download links to your files.",
     "type": "craft-plugin",
-    "version": "2.1.9",
+    "version": "2.2.0",
     "keywords": [
         "craft",
         "cms",
@@ -24,7 +24,7 @@
         }
     ],
     "require": {
-        "craftcms/cms": "^3.5"
+        "craftcms/cms": "^4.0.0-beta"
     },
     "autoload": {
         "psr-4": {
