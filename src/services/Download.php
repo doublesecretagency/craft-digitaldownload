@@ -391,7 +391,7 @@ class Download extends Component
 
         // User must be logged in
         if ('*' === $requirement) {
-            return (bool) $this->_user->id;
+            return isset($this->_user->id);
         }
 
         // User ID must match specified ID
