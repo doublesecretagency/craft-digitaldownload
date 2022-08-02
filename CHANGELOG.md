@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.1 - 2022-08-02
+
+### Fixed
+- Fixed bug which occurred when user login is required. (thanks @corneliusio)
+
 ## 2.2.0 - 2022-04-21
 
 ### Added
