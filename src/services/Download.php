@@ -163,10 +163,10 @@ class Download extends Component
             return;
         }
 
-        /** @var Volume $volume */
+        // Get volume
         $volume = $asset->getVolume();
 
-        /** @var FsInterface $filesystem */
+        // Get filesystem
         $filesystem = $volume->getFs();
 
         // Determine volume type
