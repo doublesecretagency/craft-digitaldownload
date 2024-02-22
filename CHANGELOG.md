@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.0.0-beta.1 - 2024-02-22
 
 ### Changed
 - Craft 5 compatibility.
