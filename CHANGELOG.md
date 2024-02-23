@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Added volume subpath for local files.
+
 ## 3.0.0-beta.1 - 2024-02-22
 
 ### Changed
