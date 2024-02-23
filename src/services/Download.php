@@ -174,9 +174,9 @@ class Download extends Component
 
             // Get volume and folder paths
             $fsSettings = $filesystem->getSettings();
-            $fsPath = App::parseEnv($fsSettings['path']).'/';
+            $fsPath = App::parseEnv($fsSettings['path']);
             $volumePath = $volume->getSubpath();
-            $folderPath = $asset->getFolder()->path.'/';
+            $folderPath = $asset->getFolder()->path;
 
             // Set local path (prevent double slashes)
             $filepath = "{$fsPath}/{$volumePath}/{$folderPath}/";
